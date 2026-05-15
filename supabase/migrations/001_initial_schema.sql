@@ -60,7 +60,8 @@ CREATE TABLE public.tasks (
   due_date timestamp with time zone,
   is_complete boolean DEFAULT false NOT NULL,
   day_number integer,
-  created_at timestamp with time zone DEFAULT now() NOT NULL
+  created_at timestamp with time zone DEFAULT now() NOT NULL,
+  updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can read own tasks." ON public.tasks FOR SELECT USING (auth.uid() = user_id);
@@ -136,3 +137,29 @@ CREATE TABLE public.reminder_queue (
 );
 ALTER TABLE public.reminder_queue ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can read own reminders." ON public.reminder_queue FOR SELECT USING (auth.uid() = user_id);
+
+-- FX Rates Table (refreshed hourly by Edge Function — never call external API per-request)
+CREATE TABLE public.fx_rates (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  base_currency text NOT NULL,
+  target_currency text NOT NULL DEFAULT 'NGN',
+  rate numeric NOT NULL,
+  fetched_at timestamp with time zone DEFAULT now() NOT NULL,
+  UNIQUE (base_currency, target_currency)
+);
+ALTER TABLE public.fx_rates ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "FX rates are viewable by everyone." ON public.fx_rates FOR SELECT USING (true);
+
+-- Performance Indexes following scaling rules in Section 14
+CREATE INDEX IF NOT EXISTS idx_opportunities_deadline ON public.opportunities (deadline);
+CREATE INDEX IF NOT EXISTS idx_opportunities_type_region ON public.opportunities (type, region);
+CREATE INDEX IF NOT EXISTS idx_opportunities_active_featured ON public.opportunities (is_active, is_featured);
+CREATE INDEX IF NOT EXISTS idx_saved_opportunities_user_id ON public.saved_opportunities (user_id);
+CREATE INDEX IF NOT EXISTS idx_saved_opportunities_opportunity_id ON public.saved_opportunities (opportunity_id);
+CREATE INDEX IF NOT EXISTS idx_saved_opportunities_status ON public.saved_opportunities (status);
+CREATE INDEX IF NOT EXISTS idx_tasks_user_opp ON public.tasks (user_id, opportunity_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_complete_due ON public.tasks (is_complete, due_date);
+CREATE INDEX IF NOT EXISTS idx_reminder_queue_scheduled_sent ON public.reminder_queue (scheduled_for, sent_at);
+CREATE INDEX IF NOT EXISTS idx_companion_messages_user_created ON public.companion_messages (user_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_credits_user ON public.credits (user_id);
+
