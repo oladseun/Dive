@@ -1,8 +1,17 @@
 import OpenAI from 'openai'
 
-export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+let openaiInstance: OpenAI | null = null
+
+export function getOpenAI() {
+  if (!process.env.OPENAI_API_KEY) return null
+  
+  if (!openaiInstance) {
+    openaiInstance = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+  }
+  return openaiInstance
+}
 
 export const MODEL_CHAT = 'gpt-4o-mini'
 export const MODEL_GENERATION = 'gpt-4o'

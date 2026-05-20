@@ -65,6 +65,7 @@ export interface Database {
           is_featured: boolean
           is_active: boolean
           requirements: string[] | null
+          description: string | null
           created_at: string
           updated_at: string
         }
@@ -82,6 +83,7 @@ export interface Database {
           is_featured?: boolean
           is_active?: boolean
           requirements?: string[] | null
+          description?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -99,6 +101,7 @@ export interface Database {
           is_featured?: boolean
           is_active?: boolean
           requirements?: string[] | null
+          description?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -300,6 +303,18 @@ export interface Database {
           channel?: string
         }
       }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
     }
   }
 }

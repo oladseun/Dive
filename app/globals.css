@@ -3,25 +3,111 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #FFFFFF;
+  --foreground: #000000;
+  --surface: #F9F9F9;
+  --primary: #000000;
+  --primary-foreground: #FFFFFF;
+  --border: #E5E5E5;
+  --muted-foreground: #737373;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  font-feature-settings: "ss01", "ss02", "cv01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-outfit), sans-serif;
+}
+
+.font-mono {
+  font-family: var(--font-mono), monospace;
+}
+
+.btn-primary {
+  @apply py-3 px-6 bg-slate-900 text-white text-[11px] font-bold uppercase tracking-[0.15em] rounded-xl hover:bg-primary transition-all shadow-lg shadow-slate-900/10 active:scale-95 disabled:opacity-50;
+  font-family: var(--font-mono), monospace;
+}
+
+.btn-secondary {
+  @apply py-3 px-6 border border-slate-200 text-center text-[11px] font-bold uppercase tracking-[0.15em] rounded-xl text-slate-600 hover:border-slate-900 hover:text-slate-900 transition-all active:scale-95 disabled:opacity-50;
+  font-family: var(--font-mono), monospace;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+
+  .bg-subtle-grid {
+    background-image: 
+      radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.03) 1px, transparent 0);
+    background-size: 32px 32px;
+  }
+
+  .bg-subtle-grid-dark {
+    background-image: 
+      radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
+    background-size: 32px 32px;
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.03) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
+}
+
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #3b82f6, transparent);
+  animation: scan-line 8s linear infinite;
+  opacity: 0.1;
+}
+
+.glass-card {
+  @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-sm;
+}
+
+.saas-card {
+  @apply bg-white border border-slate-200/60 rounded-xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.07)] hover:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1)] transition-all duration-300;
 }

@@ -1,0 +1,66 @@
+'use server'
+
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import { Database } from '@/types/database'
+
+
+export async function login(formData: FormData) {
+  const supabase = createClient()
+
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
+
+  if (error) {
+    return redirect(`/login?message=${encodeURIComponent(error.message)}`)
+  }
+
+  revalidatePath('/dashboard', 'layout')
+  return redirect('/dashboard')
+}
+
+export async function signup(formData: FormData) {
+  const supabase = createClient()
+
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+  const name = formData.get('name') as string
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: name,
+      },
+    },
+  })
+
+  if (error) {
+    return redirect(`/signup?message=${encodeURIComponent(error.message)}`)
+  }
+
+  // If we have a user, ensure the profile is created in our public.users table
+  if (data.user) {
+    await (supabase.from('users') as any).upsert({
+      id: data.user.id,
+      email: data.user.email as string,
+      name: name,
+      tier: 'free',
+    })
+  }
+
+  return redirect('/login?message=Check your email to confirm your account')
+}
+
+export async function signOut() {
+  const supabase = createClient()
+  await supabase.auth.signOut()
+  return redirect('/')
+}

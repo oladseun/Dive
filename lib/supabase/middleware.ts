@@ -4,7 +4,9 @@ import { Database } from '@/types/database'
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
-    request,
+    request: {
+      headers: new Headers(request.headers),
+    },
   })
 
   const supabase = createServerClient<Database>(
@@ -34,12 +36,17 @@ export async function updateSession(request: NextRequest) {
 
   if (
     !user &&
-    request.nextUrl.pathname.startsWith('/dashboard')
+    request.nextUrl.pathname.startsWith('/dashboard') &&
+    !request.nextUrl.pathname.startsWith('/login') &&
+    !request.nextUrl.pathname.startsWith('/signup')
   ) {
     const url = request.nextUrl.clone()
-    url.pathname = '/login' // Assuming login is at /login
+    url.pathname = '/login'
     return NextResponse.redirect(url)
   }
+
+  // Pass the pathname to headers for server components
+  supabaseResponse.headers.set('x-pathname', request.nextUrl.pathname)
 
   return supabaseResponse
 }

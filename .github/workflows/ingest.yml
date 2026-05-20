@@ -1,0 +1,15 @@
+name: Opportunity Ingestion Cron
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # Every 6 hours
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Ingestion
+        run: |
+          curl -X POST "https://your-domain.com/api/ingest?key=${{ secrets.CRON_SECRET }}" \
+          -H "Content-Type: application/json"
