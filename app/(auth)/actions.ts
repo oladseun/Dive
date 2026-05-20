@@ -64,3 +64,33 @@ export async function signOut() {
   await supabase.auth.signOut()
   return redirect('/')
 }
+
+export async function resetPasswordForEmail(formData: FormData) {
+  const supabase = createClient()
+  const email = formData.get('email') as string
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/reset-password`,
+  })
+
+  if (error) {
+    return redirect(`/forgot-password?message=${encodeURIComponent(error.message)}`)
+  }
+
+  return redirect('/forgot-password?message=Check your email for the reset link')
+}
+
+export async function updatePassword(formData: FormData) {
+  const supabase = createClient()
+  const password = formData.get('password') as string
+
+  const { error } = await supabase.auth.updateUser({
+    password: password,
+  })
+
+  if (error) {
+    return redirect(`/reset-password?message=${encodeURIComponent(error.message)}`)
+  }
+
+  return redirect('/login?message=Password updated successfully! You can now log in.')
+}

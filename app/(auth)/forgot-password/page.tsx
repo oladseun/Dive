@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { login } from "../actions";
+import { resetPasswordForEmail } from "../actions";
 import { Button } from "@/components/ui";
 
-export default function LoginPage({
+export default function ForgotPasswordPage({
   searchParams,
 }: {
   searchParams: { message: string };
@@ -34,10 +34,10 @@ export default function LoginPage({
     >
       <motion.div variants={itemVariants} className="space-y-3">
         <h1 className="text-4xl font-display font-black tracking-tightest text-slate-900 leading-tight">
-          Welcome <span className="text-blue-600">Back.</span>
+          Reset <span className="text-blue-600">Password.</span>
         </h1>
         <p className="text-slate-500 text-sm font-medium leading-relaxed">
-          Sign in to your account to continue your journey.
+          Enter your email address and we'll send you a link to reset your password.
         </p>
       </motion.div>
       
@@ -56,7 +56,7 @@ export default function LoginPage({
         </motion.div>
       )}
 
-      <form action={login} className="space-y-6">
+      <form action={resetPasswordForEmail} className="space-y-6">
         <div className="space-y-4">
           <motion.div variants={itemVariants} className="space-y-1.5">
             <label htmlFor="email" className="text-xs font-semibold text-slate-700 ml-1">
@@ -73,27 +73,6 @@ export default function LoginPage({
               />
             </div>
           </motion.div>
-          
-          <motion.div variants={itemVariants} className="space-y-1.5">
-            <div className="flex justify-between items-center px-1">
-              <label htmlFor="password" className="text-xs font-semibold text-slate-700">
-                Password
-              </label>
-              <Link href="/forgot-password" className="text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors">
-                Forgot password?
-              </Link>
-            </div>
-            <div className="relative group">
-              <input
-                name="password"
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all duration-300 placeholder:text-slate-400 text-sm"
-                required
-              />
-            </div>
-          </motion.div>
         </div>
         
         <Button
@@ -101,7 +80,7 @@ export default function LoginPage({
           size="lg"
           className="w-full"
         >
-          Sign In
+          Send Reset Link
           <svg className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
           </svg>
@@ -110,13 +89,12 @@ export default function LoginPage({
       
       <motion.div variants={itemVariants} className="text-center pt-6 border-t border-slate-100">
         <p className="text-sm text-slate-500 font-medium">
-          New to Dive?{" "}
-          <Link href="/signup" className="text-blue-600 hover:text-blue-700 transition-all font-bold">
-            Create an account
+          Remembered your password?{" "}
+          <Link href="/login" className="text-blue-600 hover:text-blue-700 transition-all font-bold">
+            Sign In
           </Link>
         </p>
       </motion.div>
     </motion.div>
   );
 }
-

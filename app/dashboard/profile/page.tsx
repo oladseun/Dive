@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import EditProfileForm from '@/components/profile/EditProfileForm'
+import InterestTagsEditor from '@/components/profile/InterestTagsEditor'
 
 export default async function ProfilePage() {
   const supabase = createClient()
@@ -41,50 +43,8 @@ export default async function ProfilePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Left Column: Profile Info */}
         <div className="lg:col-span-2 space-y-10">
-          <section className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
-            <div className="px-8 py-5 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between">
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Account Identity</h3>
-              <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                Verified
-              </span>
-            </div>
-            
-            <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-              <div className="space-y-1">
-                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Legal Name</p>
-                <p className="text-sm font-bold text-slate-900">{profile?.name || 'Not specified'}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Primary Email</p>
-                <p className="text-sm font-bold text-slate-900 truncate">{profile?.email}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Residence</p>
-                <p className="text-sm font-bold text-slate-900">{profile?.country || 'Global'}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Academic Status</p>
-                <p className="text-sm font-bold text-slate-900">{profile?.education_level || 'Not specified'}</p>
-              </div>
-            </div>
-          </section>
-
-          <section className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
-            <div className="px-8 py-5 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between">
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Strategic Interests</h3>
-              <button className="text-[10px] font-bold text-primary uppercase tracking-widest hover:text-blue-700 transition-colors">Edit Mapping</button>
-            </div>
-            
-            <div className="p-8 flex flex-wrap gap-2.5">
-              {profile?.interest_tags?.map((tag: string) => (
-                <span key={tag} className="px-4 py-2 bg-slate-50 border border-slate-100 text-[10px] font-bold uppercase tracking-widest text-slate-600 rounded-xl hover:border-primary/20 hover:text-primary transition-all">
-                  {tag}
-                </span>
-              ))}
-              {!profile?.interest_tags?.length && <p className="text-xs text-slate-400 font-medium italic">No strategic interests mapped yet.</p>}
-            </div>
-          </section>
+          <EditProfileForm profile={profile} />
+          <InterestTagsEditor initialTags={profile?.interest_tags || []} />
         </div>
 
         {/* Right Column: Account Status */}
