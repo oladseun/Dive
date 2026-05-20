@@ -14,11 +14,27 @@ export default async function ProfilePage() {
     return redirect('/login')
   }
 
-  const { data: profile } = await (supabase
+  let { data: profile } = await (supabase
     .from('users') as any)
     .select('*')
     .eq('id', user.id)
     .single()
+
+  if (!profile) {
+    profile = {
+      id: user.id,
+      email: user.email,
+      name: user.user_metadata?.full_name || user.user_metadata?.name || '',
+      created_at: user.created_at,
+      tier: 'free',
+      interest_tags: [],
+    }
+  } else {
+    // Fill in missing email or name from auth if they are missing in public.users
+    profile.email = profile.email || user.email;
+    profile.name = profile.name || user.user_metadata?.full_name || user.user_metadata?.name || '';
+    profile.created_at = profile.created_at || user.created_at;
+  }
 
   return (
     <div className="max-w-4xl space-y-12 animate-in fade-in slide-in-from-bottom-2 duration-700">

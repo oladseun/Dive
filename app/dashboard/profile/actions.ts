@@ -16,12 +16,13 @@ export async function updateBasicProfile(formData: FormData) {
   const education_level = formData.get('education_level') as string
 
   const { error } = await (supabase.from('users') as any)
-    .update({
+    .upsert({
+      id: user.id,
+      email: user.email,
       name,
       country,
       education_level
     })
-    .eq('id', user.id)
 
   if (error) {
     throw new Error(error.message)
@@ -39,10 +40,11 @@ export async function updateInterestTags(tags: string[]) {
   }
 
   const { error } = await (supabase.from('users') as any)
-    .update({
+    .upsert({
+      id: user.id,
+      email: user.email,
       interest_tags: tags
     })
-    .eq('id', user.id)
 
   if (error) {
     throw new Error(error.message)
