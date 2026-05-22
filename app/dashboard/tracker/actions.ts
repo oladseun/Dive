@@ -21,3 +21,30 @@ export async function toggleTaskStatus(taskId: string, isComplete: boolean) {
 
   revalidatePath('/dashboard/tracker/[id]', 'page')
 }
+
+export async function updateTaskDetails(
+  taskId: string, 
+  data: { status: string; notes: string | null; link_url: string | null }
+) {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { error } = await (supabase
+    .from('tasks') as any)
+    .update({ 
+      status: data.status,
+      is_complete: data.status === 'completed',
+      notes: data.notes,
+      link_url: data.link_url
+    })
+    .eq('id', taskId)
+    .eq('user_id', user.id)
+
+  if (error) {
+    console.error('Error updating task details:', error)
+    throw new Error('Failed to update task details')
+  }
+
+  revalidatePath('/dashboard/tracker/[id]', 'page')
+}
