@@ -8,8 +8,8 @@ export async function toggleTaskStatus(taskId: string, isComplete: boolean) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
 
-  const { error } = await supabase
-    .from('tasks')
+  const { error } = await (supabase
+    .from('tasks') as any)
     .update({ is_complete: isComplete })
     .eq('id', taskId)
     .eq('user_id', user.id)

@@ -17,8 +17,8 @@ export default async function TrackerPage({ params }: { params: { id: string } }
   }
 
   // Fetch the saved opportunity
-  const { data: savedOpp, error } = await supabase
-    .from('saved_opportunities')
+  const { data: savedOppData, error } = await (supabase
+    .from('saved_opportunities') as any)
     .select(`
       *,
       opportunities (*)
@@ -27,15 +27,17 @@ export default async function TrackerPage({ params }: { params: { id: string } }
     .eq('user_id', user.id)
     .single()
 
+  const savedOpp = savedOppData as any
+
   if (error || !savedOpp) {
     return redirect('/dashboard/saved')
   }
 
-  const opp = savedOpp.opportunities as any
+  const opp = savedOpp.opportunities
 
   // Fetch tasks for this user & opportunity
-  const { data: tasks, error: tasksError } = await supabase
-    .from('tasks')
+  const { data: tasks, error: tasksError } = await (supabase
+    .from('tasks') as any)
     .select('*')
     .eq('opportunity_id', opp.id)
     .eq('user_id', user.id)

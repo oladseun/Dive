@@ -46,7 +46,7 @@ export async function POST(request: Request) {
       ...rawData,
       tags: [...(rawData.tags || []), ...enriched.tags],
       requirements: enriched.requirements,
-      deadline: enriched.deadline || null,
+      deadline: enriched.deadline || undefined,
       region: enriched.region || rawData.region,
     })
 
