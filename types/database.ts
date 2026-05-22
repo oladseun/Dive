@@ -161,32 +161,7 @@ export interface Database {
           created_at?: string
         }
       }
-      documents: {
-        Row: {
-          id: string
-          user_id: string
-          file_name: string
-          file_url: string
-          doc_type: string
-          uploaded_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          file_name: string
-          file_url: string
-          doc_type: string
-          uploaded_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          file_name?: string
-          file_url?: string
-          doc_type?: string
-          uploaded_at?: string
-        }
-      }
+
       templates: {
         Row: {
           id: string

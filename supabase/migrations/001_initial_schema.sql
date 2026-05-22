@@ -69,20 +69,6 @@ CREATE POLICY "Users can insert own tasks." ON public.tasks FOR INSERT WITH CHEC
 CREATE POLICY "Users can update own tasks." ON public.tasks FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Users can delete own tasks." ON public.tasks FOR DELETE USING (auth.uid() = user_id);
 
--- Create Documents Table
-CREATE TABLE public.documents (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
-  file_name text NOT NULL,
-  file_url text NOT NULL,
-  doc_type text NOT NULL,
-  uploaded_at timestamp with time zone DEFAULT now() NOT NULL
-);
-ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can read own documents." ON public.documents FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own documents." ON public.documents FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update own documents." ON public.documents FOR UPDATE USING (auth.uid() = user_id);
-CREATE POLICY "Users can delete own documents." ON public.documents FOR DELETE USING (auth.uid() = user_id);
 
 -- Create Templates Table
 CREATE TABLE public.templates (

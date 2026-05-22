@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getURL } from '@/lib/utils'
 import { Database } from '@/types/database'
 
 
@@ -39,6 +40,7 @@ export async function signup(formData: FormData) {
       data: {
         full_name: name,
       },
+      emailRedirectTo: `${getURL()}dashboard`,
     },
   })
 
@@ -70,7 +72,7 @@ export async function resetPasswordForEmail(formData: FormData) {
   const email = formData.get('email') as string
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/reset-password`,
+    redirectTo: `${getURL()}reset-password`,
   })
 
   if (error) {
