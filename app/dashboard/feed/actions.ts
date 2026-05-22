@@ -11,6 +11,12 @@ export async function saveOpportunity(opportunityId: string) {
 
   if (!user) throw new Error('Unauthorized')
 
+  // Ensure user exists in public.users to prevent foreign key errors if they signed up before the upsert was added to the signup flow
+  await (supabase.from('users') as any).upsert({
+    id: user.id,
+    email: user.email,
+  }, { onConflict: 'id' })
+
   const { error } = await (supabase.from('saved_opportunities') as any).insert({
     user_id: user.id,
     opportunity_id: opportunityId,
@@ -19,7 +25,10 @@ export async function saveOpportunity(opportunityId: string) {
 
   if (error) {
     if (error.code === '23505') return // Already saved
-    throw error
+    
+    // Log the error for debugging
+    console.error('Save Opportunity error:', error)
+    throw new Error(error.message)
   }
 
   revalidatePath('/dashboard')
