@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { toggleTask } from './actions'
 import { TaskDetailPanel } from '@/components/tracker/TaskDetailPanel'
+import { toast } from 'sonner'
 
 interface Task {
   id: string
@@ -18,11 +19,13 @@ interface Task {
 export default function TaskList({ 
   tasks: initialTasks, 
   opportunityId, 
-  userId 
+  userId,
+  userTier = 'free'
 }: { 
   tasks: Task[], 
   opportunityId: string, 
-  userId: string 
+  userId: string,
+  userTier?: string
 }) {
   const [tasks, setTasks] = useState(initialTasks)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
@@ -37,17 +40,25 @@ export default function TaskList({
     await toggleTask(taskId, !currentStatus)
   }
 
+  const handleTaskClick = (task: Task) => {
+    if (userTier === 'pro') {
+      setSelectedTask(task)
+    } else {
+      toast.error('Premium Feature', { description: 'Upgrade to Pro to access Deep CRM task tracking and notes.' })
+    }
+  }
+
   return (
     <>
       <div className="space-y-4">
         {tasks.map((task, i) => (
           <motion.div 
             key={task.id}
-            onClick={() => setSelectedTask(task)}
+            onClick={() => handleTaskClick(task)}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className={`flex items-center gap-6 p-4 rounded-xl border transition-all cursor-pointer ${
+            className={`flex items-center gap-6 p-4 rounded-xl border transition-all ${userTier === 'pro' ? 'cursor-pointer' : 'cursor-default'} ${
               task.is_complete 
                 ? 'bg-surface border-border opacity-70' 
                 : task.status === 'in_progress'
@@ -73,7 +84,7 @@ export default function TaskList({
               <span className={`font-medium ${task.is_complete ? 'line-through text-muted-foreground' : ''}`}>
                 {task.title}
               </span>
-              {(task.notes || task.link_url) && !task.is_complete && (
+              {(task.notes || task.link_url) && !task.is_complete && userTier === 'pro' && (
                 <div className="flex gap-2">
                   {task.notes && (
                     <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground bg-surface border border-border px-2 py-0.5 rounded-md">Notes</span>
@@ -92,7 +103,7 @@ export default function TaskList({
         ))}
       </div>
 
-      {selectedTask && (
+      {selectedTask && userTier === 'pro' && (
         <TaskDetailPanel 
           task={selectedTask} 
           onClose={() => setSelectedTask(null)} 

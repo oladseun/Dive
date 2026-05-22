@@ -42,6 +42,13 @@ export default async function RoadmapDetailPage({
     return redirect('/dashboard/feed')
   }
 
+  // Fetch user profile to check tier
+  const { data: profile } = await (supabase
+    .from('users') as any)
+    .select('tier')
+    .eq('id', user.id)
+    .single()
+
   // Fetch tasks
   let { data: tasks } = await (supabase
     .from('tasks') as any)
@@ -52,15 +59,33 @@ export default async function RoadmapDetailPage({
 
   // If no tasks, generate them
   if (tasks && tasks.length === 0) {
-    const defaultTasks = [
-      { opportunity_id: id, user_id: user.id, title: "Review Scholarship Requirements", day_number: 1 },
-      { opportunity_id: id, user_id: user.id, title: "Check Eligibility (Age, Region, Academic)", day_number: 2 },
-      { opportunity_id: id, user_id: user.id, title: "Gather Academic Transcripts", day_number: 4 },
-      { opportunity_id: id, user_id: user.id, title: "Draft Personal Statement / SOP", day_number: 7 },
-      { opportunity_id: id, user_id: user.id, title: "Request Recommendations", day_number: 10 },
-      { opportunity_id: id, user_id: user.id, title: "Final Review and Editing", day_number: 14 },
-      { opportunity_id: id, user_id: user.id, title: "Submit Application", day_number: 15 },
-    ]
+    let defaultTasks: any[] = []
+
+    if (profile?.tier === 'pro') {
+      // Dynamic AI Generation for PRO users
+      const { generateTargetedTasks } = await import('@/lib/ai/task-generator')
+      const generatedTasks = await generateTargetedTasks(opportunity)
+      defaultTasks = generatedTasks.map((t: any) => ({
+        opportunity_id: id,
+        user_id: user.id,
+        title: t.title,
+        day_number: t.day_number,
+        notes: t.notes || null,
+        link_url: t.link_url || null,
+        status: 'todo'
+      }))
+    } else {
+      // Generic Generation for FREE users
+      defaultTasks = [
+        { opportunity_id: id, user_id: user.id, title: "Review Scholarship Requirements", day_number: 1 },
+        { opportunity_id: id, user_id: user.id, title: "Check Eligibility (Age, Region, Academic)", day_number: 2 },
+        { opportunity_id: id, user_id: user.id, title: "Gather Academic Transcripts", day_number: 4 },
+        { opportunity_id: id, user_id: user.id, title: "Draft Personal Statement / SOP", day_number: 7 },
+        { opportunity_id: id, user_id: user.id, title: "Request Recommendations", day_number: 10 },
+        { opportunity_id: id, user_id: user.id, title: "Final Review and Editing", day_number: 14 },
+        { opportunity_id: id, user_id: user.id, title: "Submit Application", day_number: 15 },
+      ]
+    }
 
     const { data: newTasks, error } = await (supabase
       .from('tasks') as any)
@@ -159,7 +184,7 @@ export default async function RoadmapDetailPage({
           </div>
           
           <div className="bg-white border border-border/50 rounded-[2rem] p-4 shadow-sm">
-            <TaskList tasks={tasks || []} opportunityId={id} userId={user.id} />
+            <TaskList tasks={tasks || []} opportunityId={id} userId={user.id} userTier={profile?.tier || 'free'} />
           </div>
         </div>
 

@@ -153,16 +153,43 @@ export default function DashboardLayout({
                 <p className="truncate text-sm font-bold text-slate-900 tracking-tight">{profile?.name || "Member"}</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <p className="truncate text-[10px] text-slate-500 font-bold uppercase tracking-widest">{profile?.tier || "Standard"} Account</p>
+                  <p className="truncate text-[10px] text-slate-500 font-bold uppercase tracking-widest">{profile?.tier === 'pro' ? 'PRO' : 'FREE'} Account</p>
                 </div>
               </div>
             </Link>
             
-            <form action={signOut}>
-              <button className="w-full text-center py-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-red-500 transition-colors">
-                Sign Out
+            {/* Quick Toggle for Testing Free/Pro */}
+            {profile && (
+              <button
+                onClick={async () => {
+                  const newTier = profile.tier === 'pro' ? 'free' : 'pro';
+                  setProfile({ ...profile, tier: newTier });
+                  await (supabase.from("users") as any).update({ tier: newTier }).eq("id", profile.id);
+                  toast.success(`Account switched to ${newTier.toUpperCase()}`);
+                }}
+                className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${
+                  profile.tier === 'pro' ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-slate-50 border-slate-200 text-slate-600'
+                }`}
+              >
+                <span className="text-[10px] font-bold uppercase tracking-widest">
+                  {profile.tier === 'pro' ? 'Pro Active' : 'Free Active'}
+                </span>
+                <div className={`w-8 h-4 rounded-full relative transition-colors ${profile.tier === 'pro' ? 'bg-indigo-500' : 'bg-slate-300'}`}>
+                  <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${profile.tier === 'pro' ? 'left-[18px]' : 'left-0.5'}`} />
+                </div>
               </button>
-            </form>
+            )}
+
+            <div className="flex items-center justify-between pt-2">
+              <Link href="/dashboard/billing" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-primary transition-colors">
+                Billing
+              </Link>
+              <form action={signOut}>
+                <button className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-red-500 transition-colors">
+                  Sign Out
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </aside>
