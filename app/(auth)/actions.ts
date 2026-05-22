@@ -50,7 +50,8 @@ export async function signup(formData: FormData) {
 
   // If we have a user, ensure the profile is created in our public.users table
   if (data.user) {
-    await (supabase.from('users') as any).upsert({
+    const adminAuth = await import('@/lib/supabase/admin').then(m => m.createAdminClient())
+    await (adminAuth.from('users') as any).upsert({
       id: data.user.id,
       email: data.user.email as string,
       name: name,
