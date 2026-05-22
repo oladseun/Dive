@@ -97,12 +97,44 @@ export function TaskDetailPanel({ task, onClose }: Props) {
           </div>
 
           <div className="space-y-3">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 font-mono">Personal Notes & Updates</label>
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 font-mono">Personal Notes & Updates</label>
+              
+              {(() => {
+                const titleLower = task.title.toLowerCase();
+                const canDraft = titleLower.includes('essay') || 
+                                 titleLower.includes('statement') || 
+                                 titleLower.includes('proposal') || 
+                                 titleLower.includes('recommendation');
+                
+                if (canDraft) {
+                  return (
+                    <button
+                      onClick={async () => {
+                        try {
+                          toast.loading('AI is drafting...', { id: 'drafting' });
+                          const { draftWithAI } = await import('@/app/dashboard/tracker/ai-actions');
+                          const draft = await draftWithAI(task.id);
+                          setNotes(prev => prev ? `${prev}\n\n${draft}` : draft);
+                          toast.success('Draft generated successfully!', { id: 'drafting' });
+                        } catch (e) {
+                          toast.error('Failed to generate draft', { id: 'drafting' });
+                        }
+                      }}
+                      className="text-[10px] font-bold uppercase tracking-widest bg-gradient-to-r from-primary to-indigo-600 text-transparent bg-clip-text hover:opacity-80 transition-opacity flex items-center gap-1"
+                    >
+                      <span className="text-xs">✨</span> Draft with AI
+                    </button>
+                  );
+                }
+                return null;
+              })()}
+            </div>
             <textarea 
               placeholder="Emailed the professor today, waiting for response..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              rows={6}
+              rows={8}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
             />
           </div>

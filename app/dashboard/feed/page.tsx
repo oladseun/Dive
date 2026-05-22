@@ -21,10 +21,10 @@ export default async function DiscoveryFeed({
     return redirect('/login')
   }
 
-  // Fetch user profile to get interest tags
+  // Fetch user profile to get match criteria
   const { data: profile, error: profileError } = await (supabase
     .from('users') as any)
-    .select('interest_tags')
+    .select('interest_tags, country, education_level')
     .eq('id', user.id)
     .single()
 
@@ -33,6 +33,8 @@ export default async function DiscoveryFeed({
   }
 
   const userInterests = profile?.interest_tags || []
+  const userCountry = profile?.country || ''
+  const userEducation = profile?.education_level || ''
 
   // Fetch opportunities
   let query = (supabase
@@ -69,11 +71,59 @@ export default async function DiscoveryFeed({
 
   // Matching logic
   const matchedOpportunities = (opportunities?.map((opp: any) => {
-    const oppTags = Array.isArray(opp.tags) ? opp.tags : []
-    const interests = Array.isArray(userInterests) ? userInterests : []
-    const overlap = oppTags.filter((tag: string) => interests.includes(tag))
-    const matchScore = overlap.length
-    return { ...opp, matchScore }
+    let score = 0;
+    const matchReasons: string[] = [];
+
+    // Tag matching (up to 40 points)
+    const oppTags = Array.isArray(opp.tags) ? opp.tags : [];
+    const interests = Array.isArray(userInterests) ? userInterests : [];
+    if (oppTags.length > 0) {
+      const overlap = oppTags.filter((tag: string) => interests.includes(tag));
+      if (overlap.length > 0) {
+        score += Math.min(40, overlap.length * 15);
+        matchReasons.push(`Matches interest in ${overlap[0]}`);
+      }
+    } else {
+      score += 20; // Default points if opp has no tags
+    }
+
+    // Region matching (30 points)
+    if (opp.region && userCountry) {
+      const regionLower = opp.region.toLowerCase();
+      const countryLower = userCountry.toLowerCase();
+      if (regionLower.includes(countryLower) || regionLower.includes('global') || regionLower.includes('remote') || regionLower.includes('any')) {
+        score += 30;
+        matchReasons.push(`Matches your region`);
+      }
+    } else if (!opp.region) {
+      score += 15; // Default points
+    }
+
+    // Education / Keyword matching (30 points)
+    if (userEducation) {
+      const eduLower = userEducation.toLowerCase();
+      const titleLower = opp.title?.toLowerCase() || '';
+      const reqsLower = Array.isArray(opp.requirements) ? opp.requirements.join(' ').toLowerCase() : '';
+      
+      let eduKeyword = '';
+      if (eduLower.includes('undergrad') || eduLower.includes('bachelor')) eduKeyword = 'undergrad';
+      else if (eduLower.includes('postgrad') || eduLower.includes('master')) eduKeyword = 'postgrad';
+      else if (eduLower.includes('phd') || eduLower.includes('doctorate')) eduKeyword = 'phd';
+      else if (eduLower.includes('high school')) eduKeyword = 'high school';
+
+      if (eduKeyword && (titleLower.includes(eduKeyword) || reqsLower.includes(eduKeyword))) {
+        score += 30;
+        matchReasons.push(`Matches education level`);
+      } else {
+        score += 15; // Give partial if we can't strongly rule it out
+      }
+    } else {
+      score += 15;
+    }
+
+    // Cap at 98% for realism
+    const matchScore = Math.min(98, Math.max(25, score));
+    return { ...opp, matchScore, matchReason: matchReasons[0] || 'Matches your profile' };
   }) || []).sort((a: any, b: any) => (b.matchScore || 0) - (a.matchScore || 0))
 
   const types = ['Scholarship', 'Grant', 'Fellowship', 'Competition']
@@ -166,18 +216,30 @@ export default async function DiscoveryFeed({
                     return null;
                   })()}
                 </div>
-                {opp.matchScore > 0 && (
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 font-mono">Strong Match</span>
+                {opp.matchScore >= 70 && (
+                  <div className="flex items-center gap-2 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 font-mono">{opp.matchScore}% Match</span>
+                  </div>
+                )}
+                {opp.matchScore >= 40 && opp.matchScore < 70 && (
+                  <div className="flex items-center gap-2 bg-orange-50 px-3 py-1 rounded-full border border-orange-100">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-orange-600 font-mono">{opp.matchScore}% Match</span>
                   </div>
                 )}
               </div>
               
-              <div className="mb-8 flex-1">
-                <h3 className="text-xl font-bold text-slate-900 group-hover:text-primary transition-colors tracking-tight leading-snug">
+              <div className="mb-6 flex-1">
+                <h3 className="text-xl font-bold text-slate-900 group-hover:text-primary transition-colors tracking-tight leading-snug mb-3">
                   {opp.title}
                 </h3>
+                {opp.matchReason && opp.matchScore >= 40 && (
+                  <div className="inline-block px-3 py-1.5 bg-primary/5 rounded-lg border border-primary/10">
+                    <p className="text-[10px] font-bold text-primary flex items-center gap-1.5">
+                      <span className="text-xs">✨</span> AI: {opp.matchReason}
+                    </p>
+                  </div>
+                )}
               </div>
               
               <div className="space-y-4 mb-8">
