@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { TaskDetailPanel } from './TaskDetailPanel'
+import { generateGoogleCalendarUrl } from '@/lib/calendar'
 
 type RoadmapTask = {
   id: string
@@ -73,11 +74,28 @@ export function RoadmapView({ tasks }: { tasks: RoadmapTask[] }) {
                       {task.day_number ? `Day ${task.day_number}` : 'Milestone'}
                     </span>
                     {task.due_date && (
-                      <span className={`text-[10px] font-bold uppercase tracking-widest font-mono ${
-                        isPast ? 'text-red-500' : 'text-slate-400'
-                      }`}>
-                        {formatDate(task.due_date)}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] font-bold uppercase tracking-widest font-mono ${
+                          isPast ? 'text-red-500' : 'text-slate-400'
+                        }`}>
+                          {formatDate(task.due_date)}
+                        </span>
+                        {!task.is_complete && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(generateGoogleCalendarUrl({
+                                title: task.title,
+                                description: task.notes || undefined,
+                                date: new Date(task.due_date!)
+                              }), '_blank');
+                            }}
+                            className="text-[8px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 font-bold uppercase tracking-widest transition-colors font-mono"
+                          >
+                            + Cal
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                   

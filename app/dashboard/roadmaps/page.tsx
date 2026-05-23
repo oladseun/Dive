@@ -18,6 +18,11 @@ export default async function RoadmapsPage() {
     .select('*, opportunities(*)')
     .eq('user_id', user.id)
 
+  const { data: allTasks } = await supabase
+    .from("tasks")
+    .select("opportunity_id, is_complete")
+    .eq("user_id", user.id);
+
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-2 duration-700">
       {/* Header Section */}
@@ -47,7 +52,10 @@ export default async function RoadmapsPage() {
             const opp = saved.opportunities
             if (!opp) return null
             
-            const progress = 35; // Mock progress
+            const oppTasks = allTasks?.filter((t: any) => t.opportunity_id === opp.id) || []
+            const progress = oppTasks.length > 0 
+              ? Math.round((oppTasks.filter((t: any) => t.is_complete).length / oppTasks.length) * 100) 
+              : 0;
 
             return (
               <div key={saved.id} className="bg-white border border-slate-100 rounded-3xl p-8 flex flex-col min-h-[320px] group hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">

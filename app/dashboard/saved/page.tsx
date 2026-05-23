@@ -102,24 +102,6 @@ export default async function SavedOpportunitiesPage() {
                           return isNaN(date.getTime()) ? 'Rolling Basis' : date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
                         })()}
                       </p>
-                      
-                      {/* Calendar Sync Dropdown/Buttons */}
-                      {opp.deadline && !isNaN(new Date(opp.deadline).getTime()) && (
-                        <div className="flex gap-2 mt-2">
-                          <a
-                            href={generateGoogleCalendarUrl({
-                              title: `Deadline: ${opp.title}`,
-                              description: `Application deadline for ${opp.title} on Dive.`,
-                              date: new Date(opp.deadline)
-                            })}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[9px] font-bold uppercase tracking-widest bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-800 px-2 py-1 rounded transition-colors"
-                          >
-                            + Google Cal
-                          </a>
-                        </div>
-                      )}
                     </div>
                   </div>
                   

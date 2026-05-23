@@ -38,14 +38,61 @@ export default function DashboardPage() {
       setSavedOpps(savedData || []);
 
       const userInterests = profileData?.interest_tags || [];
+      const userCountry = profileData?.country || '';
+      const userEducation = profileData?.education_level || '';
+      
       const { data: allOpps } = await supabase
         .from("opportunities")
-        .select("tags")
+        .select("tags, region, title, requirements")
         .eq("is_active", true);
       
-      const matches = (allOpps?.filter((opp: any) => 
-        opp.tags?.some((tag: string) => userInterests.includes(tag))
-      ) || []).length;
+      const matches = (allOpps?.filter((opp: any) => {
+        let score = 0;
+        
+        // Tag matching (up to 40)
+        const oppTags = Array.isArray(opp.tags) ? opp.tags : [];
+        const interests = Array.isArray(userInterests) ? userInterests : [];
+        if (oppTags.length > 0) {
+          const overlap = oppTags.filter((tag: string) => interests.includes(tag));
+          if (overlap.length > 0) score += Math.min(40, overlap.length * 15);
+        } else {
+          score += 20;
+        }
+
+        // Region matching (30)
+        if (opp.region && userCountry) {
+          const regionLower = opp.region.toLowerCase();
+          const countryLower = userCountry.toLowerCase();
+          if (regionLower.includes(countryLower) || regionLower.includes('global') || regionLower.includes('remote') || regionLower.includes('any')) {
+            score += 30;
+          }
+        } else if (!opp.region) {
+          score += 15;
+        }
+
+        // Education matching (30)
+        if (userEducation) {
+          const eduLower = userEducation.toLowerCase();
+          const titleLower = opp.title?.toLowerCase() || '';
+          const reqsLower = Array.isArray(opp.requirements) ? opp.requirements.join(' ').toLowerCase() : '';
+          
+          let eduKeyword = '';
+          if (eduLower.includes('undergrad') || eduLower.includes('bachelor')) eduKeyword = 'undergrad';
+          else if (eduLower.includes('postgrad') || eduLower.includes('master')) eduKeyword = 'postgrad';
+          else if (eduLower.includes('phd') || eduLower.includes('doctorate')) eduKeyword = 'phd';
+          else if (eduLower.includes('high school')) eduKeyword = 'high school';
+
+          if (eduKeyword && (titleLower.includes(eduKeyword) || reqsLower.includes(eduKeyword))) {
+            score += 30;
+          } else {
+            score += 15;
+          }
+        } else {
+          score += 15;
+        }
+
+        return score >= 60; // Highly curated threshold
+      }) || []).length;
       setMatchCount(matches);
 
       const { data: docs } = await supabase

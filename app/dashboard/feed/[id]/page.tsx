@@ -83,20 +83,6 @@ export default async function OpportunityDetailsPage({
                 <p className="text-lg font-bold text-slate-900">
                   {opportunity.deadline ? new Date(opportunity.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Rolling Basis'}
                 </p>
-                {opportunity.deadline && !isNaN(new Date(opportunity.deadline).getTime()) && (
-                  <a
-                    href={generateGoogleCalendarUrl({
-                      title: `Deadline: ${opportunity.title}`,
-                      description: `Application deadline for ${opportunity.title}.`,
-                      date: new Date(opportunity.deadline)
-                    })}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block text-[9px] font-bold uppercase tracking-widest bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-800 px-2 py-1 rounded transition-colors"
-                  >
-                    + Google Cal
-                  </a>
-                )}
               </div>
             </div>
             <div className="space-y-1">
