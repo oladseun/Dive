@@ -10,7 +10,6 @@ type Task = {
   title: string
   status: string
   notes: string | null
-  link_url: string | null
   is_complete: boolean
 }
 
@@ -24,7 +23,6 @@ interface Props {
 export function TaskDetailPanel({ task, opportunity, profile, onClose }: Props) {
   const [status, setStatus] = useState(task.status || (task.is_complete ? 'completed' : 'todo'))
   const [notes, setNotes] = useState(task.notes || '')
-  const [linkUrl, setLinkUrl] = useState(task.link_url || '')
   const [isSaving, setIsSaving] = useState(false)
 
   // Sub-state for Essay Architect
@@ -33,7 +31,7 @@ export function TaskDetailPanel({ task, opportunity, profile, onClose }: Props) 
   const handleSave = async () => {
     setIsSaving(true)
     try {
-      await updateTaskDetails(task.id, { status, notes, link_url: linkUrl })
+      await updateTaskDetails(task.id, { status, notes })
       toast.success('Task updated')
       onClose()
     } catch (e) {
@@ -145,35 +143,37 @@ export function TaskDetailPanel({ task, opportunity, profile, onClose }: Props) 
   const renderDocumentPanel = () => {
     return (
       <div className="space-y-6">
-        <div className="bg-indigo-50/50 border border-indigo-100 rounded-2xl p-5 space-y-4">
-          <h4 className="text-sm font-bold text-indigo-900 flex items-center gap-2">
-            <span>📎</span> Document Assembly
-          </h4>
-          <p className="text-xs text-indigo-700/80 leading-relaxed">
-            Upload or link your specific document below. Ensure it meets the required formats (usually PDF).
-          </p>
-          
-          <div className="space-y-3">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 font-mono">Secure Document Link</label>
-            <input 
-              type="url"
-              placeholder="e.g. Google Drive link to Transcript..."
-              value={linkUrl}
-              onChange={(e) => setLinkUrl(e.target.value)}
-              className="w-full px-4 py-3 bg-white border border-indigo-200 rounded-xl text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+        <div className="bg-indigo-50/50 border border-indigo-100 rounded-2xl overflow-hidden flex flex-col">
+          <div className="bg-indigo-100/50 px-4 py-3 border-b border-indigo-100 flex items-center justify-between">
+            <h4 className="text-xs font-bold text-indigo-900 uppercase tracking-widest flex items-center gap-2">
+              <span>🔎</span> AI Document Reviewer
+            </h4>
+            <button
+              onClick={async () => {
+                try {
+                  toast.loading('AI is scanning document...', { id: 'scanning' });
+                  const { reviewTaskDocument } = await import('@/app/dashboard/tracker/ai-actions');
+                  const review = await reviewTaskDocument(task.id, notes);
+                  setNotes(prev => prev ? `${prev}\n\n${review}` : review);
+                  toast.success('Review complete!', { id: 'scanning' });
+                } catch (e) {
+                  toast.error('Failed to review document', { id: 'scanning' });
+                }
+              }}
+              className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1"
+            >
+              <span>✨</span> Review Document
+            </button>
+          </div>
+          <div className="p-4 bg-white">
+            <textarea 
+              placeholder="Paste the text of your CV, Resume, or Document here. The AI will scan it and advise you based on the opportunity requirements..."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={12}
+              className="w-full text-sm font-medium text-slate-800 placeholder:text-slate-300 focus:outline-none resize-none leading-relaxed"
             />
           </div>
-        </div>
-
-        <div className="space-y-3">
-          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 font-mono">Document Status Notes</label>
-          <textarea 
-            placeholder="Waiting on university to send official copies..."
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={4}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
-          />
         </div>
       </div>
     )
@@ -228,17 +228,6 @@ export function TaskDetailPanel({ task, opportunity, profile, onClose }: Props) 
             </div>
           </div>
         </div>
-        
-        <div className="space-y-3">
-          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 font-mono">Final Document Link</label>
-          <input 
-            type="url"
-            placeholder="Link to your polished Google Doc or PDF..."
-            value={linkUrl}
-            onChange={(e) => setLinkUrl(e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-          />
-        </div>
       </div>
     )
   }
@@ -284,31 +273,40 @@ export function TaskDetailPanel({ task, opportunity, profile, onClose }: Props) 
 
   const renderGenericPanel = () => {
     return (
-      <>
-        <div className="space-y-3">
-          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 font-mono">Asset Link</label>
-          <input 
-            type="url"
-            placeholder="e.g. Google Doc link, portal URL..."
-            value={linkUrl}
-            onChange={(e) => setLinkUrl(e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-          />
-        </div>
-
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 font-mono">Personal Notes & Updates</label>
+      <div className="space-y-6">
+        <div className="bg-emerald-50/50 border border-emerald-100 rounded-2xl overflow-hidden flex flex-col">
+          <div className="bg-emerald-100/50 px-4 py-3 border-b border-emerald-100 flex items-center justify-between">
+            <h4 className="text-xs font-bold text-emerald-900 uppercase tracking-widest flex items-center gap-2">
+              <span>🧭</span> AI Task Advisor
+            </h4>
+            <button
+              onClick={async () => {
+                try {
+                  toast.loading('AI is analyzing task...', { id: 'advice' });
+                  const { adviceForTask } = await import('@/app/dashboard/tracker/ai-actions');
+                  const advice = await adviceForTask(task.id);
+                  setNotes(prev => prev ? `${prev}\n\n${advice}` : advice);
+                  toast.success('Advice generated!', { id: 'advice' });
+                } catch (e) {
+                  toast.error('Failed to get advice', { id: 'advice' });
+                }
+              }}
+              className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 hover:text-emerald-800 transition-colors flex items-center gap-1"
+            >
+              <span>✨</span> Get Advice
+            </button>
           </div>
-          <textarea 
-            placeholder="Add any relevant notes or updates here..."
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={8}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
-          />
+          <div className="p-4 bg-white">
+            <textarea 
+              placeholder="Click 'Get Advice' to receive a step-by-step checklist and guidance tailored specifically for this task..."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={10}
+              className="w-full text-sm font-medium text-slate-800 placeholder:text-slate-300 focus:outline-none resize-none leading-relaxed"
+            />
+          </div>
         </div>
-      </>
+      </div>
     )
   }
 
@@ -339,10 +337,10 @@ export function TaskDetailPanel({ task, opportunity, profile, onClose }: Props) 
             <h3 className="text-2xl font-display font-medium text-slate-900 mb-2 leading-tight">{task.title}</h3>
             <p className="text-sm text-slate-500 font-medium">
               {category === 'eligibility' && "Let's make sure you meet the criteria before investing time."}
-              {category === 'document' && "Gathering the right documents early prevents last-minute stress."}
+              {category === 'document' && "Paste your document text for AI review and feedback."}
               {category === 'essay' && "Your personal statement is the most critical part of the application. Let's draft it."}
               {category === 'outreach' && "Clear communication is key. Let's draft an effective outreach message."}
-              {category === 'generic' && "Update your progress and attach relevant documents here."}
+              {category === 'generic' && "Let AI assist you with a customized step-by-step breakdown."}
             </p>
           </div>
 

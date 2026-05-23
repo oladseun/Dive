@@ -58,3 +58,40 @@ ${userProfile?.name || 'Your Name'}
 `
   }
 }
+
+export async function reviewDocumentWithAI(documentText: string, opportunity: any, userProfile: any) {
+  await new Promise(resolve => setTimeout(resolve, 2000))
+
+  if (!documentText || documentText.trim().length === 0) {
+    return "❌ Please paste the text of your document so I can review it."
+  }
+
+  return `### 🤖 AI Document Review
+
+I've analyzed your document against the requirements for **${opportunity?.title || 'this opportunity'}**.
+
+#### ✅ Strengths
+- Your document aligns well with the general focus area of ${userProfile?.interest_tags?.[0] || 'your field'}.
+- The format appears clean and readable.
+
+#### ⚠️ Areas for Improvement
+- **Specific Requirement Missing:** The opportunity mentions "${Array.isArray(opportunity?.requirements) ? opportunity.requirements[0] : 'demonstrated leadership'}", but this is not strongly highlighted in your text. Consider adding a dedicated section or bullet point addressing this.
+- **Tone Check:** Ensure that your tone is confident but not boastful. Some phrases could be quantified (e.g., instead of "improved sales", use "improved sales by 20%").
+
+*Disclaimer: This is an AI-generated review. Always double-check with a human mentor before final submission!*`
+}
+
+export async function getTaskAdvice(taskTitle: string, opportunity: any) {
+  await new Promise(resolve => setTimeout(resolve, 1500))
+
+  return `### 💡 AI Advice: ${taskTitle}
+
+Here is a step-by-step guide to help you complete this task effectively for **${opportunity?.title || 'this opportunity'}**:
+
+1. **Understand the Goal:** Read the official guidelines to see exactly what they expect for "${taskTitle}".
+2. **Prepare Early:** Don't wait until the deadline (${opportunity?.deadline ? new Date(opportunity.deadline).toLocaleDateString() : 'which might be soon'}). 
+3. **Double Check:** Make sure any related files are saved in PDF format unless otherwise specified.
+4. **Final Step:** Mark this task as complete once you've thoroughly reviewed it.
+
+*Need more help? Break this task down into smaller sub-tasks and tackle them one by one!*`
+}

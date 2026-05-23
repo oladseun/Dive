@@ -24,20 +24,25 @@ export async function toggleTaskStatus(taskId: string, isComplete: boolean) {
 
 export async function updateTaskDetails(
   taskId: string, 
-  data: { status: string; notes: string | null; link_url: string | null }
+  data: { status: string; notes: string | null; link_url?: string | null }
 ) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
 
+  const updatePayload: any = {
+    status: data.status,
+    is_complete: data.status === 'completed',
+    notes: data.notes,
+  }
+  
+  if ('link_url' in data) {
+    updatePayload.link_url = data.link_url
+  }
+
   const { error } = await (supabase
     .from('tasks') as any)
-    .update({ 
-      status: data.status,
-      is_complete: data.status === 'completed',
-      notes: data.notes,
-      link_url: data.link_url
-    })
+    .update(updatePayload)
     .eq('id', taskId)
     .eq('user_id', user.id)
 
