@@ -52,3 +52,28 @@ export async function updateInterestTags(tags: string[]) {
 
   revalidatePath('/dashboard/profile')
 }
+
+export async function updateNotificationPrefs(formData: FormData) {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    throw new Error('Unauthorized')
+  }
+
+  const notification_pref = formData.get('notification_pref') as string || 'email'
+  const whatsapp_number = formData.get('whatsapp_number') as string || ''
+
+  const { error } = await (supabase.from('users') as any)
+    .update({
+      notification_pref,
+      whatsapp_number
+    })
+    .eq('id', user.id)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  revalidatePath('/dashboard/profile')
+}

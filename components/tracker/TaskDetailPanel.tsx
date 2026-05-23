@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui'
 import { updateTaskDetails } from '@/app/dashboard/tracker/actions'
 import { toast } from 'sonner'
+import { generateGoogleCalendarUrl, downloadIcsFile } from '@/lib/calendar'
 
 type Task = {
   id: string
@@ -11,6 +12,7 @@ type Task = {
   status: string
   notes: string | null
   is_complete: boolean
+  due_date?: string | null
 }
 
 interface Props {
@@ -324,12 +326,38 @@ export function TaskDetailPanel({ task, opportunity, profile, onClose }: Props) 
               {category}
             </span>
           </div>
-          <button 
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors"
-          >
-            ✕
-          </button>
+          <div className="flex items-center gap-2">
+            {task.due_date && (
+              <div className="flex items-center gap-2 mr-4 border-r border-slate-200 pr-4">
+                <button
+                  onClick={() => window.open(generateGoogleCalendarUrl({
+                    title: task.title,
+                    description: task.notes || undefined,
+                    date: new Date(task.due_date!)
+                  }), '_blank')}
+                  className="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all shadow-sm"
+                >
+                  Google Cal
+                </button>
+                <button
+                  onClick={() => downloadIcsFile({
+                    title: task.title,
+                    description: task.notes || undefined,
+                    date: new Date(task.due_date!)
+                  })}
+                  className="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all shadow-sm"
+                >
+                  Apple / ICS
+                </button>
+              </div>
+            )}
+            <button 
+              onClick={onClose}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-8">

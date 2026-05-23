@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import EditProfileForm from '@/components/profile/EditProfileForm'
 import InterestTagsEditor from '@/components/profile/InterestTagsEditor'
+import NotificationSettingsForm from '@/components/profile/NotificationSettingsForm'
 
 export default async function ProfilePage() {
   const supabase = createClient()
@@ -61,6 +62,7 @@ export default async function ProfilePage() {
         <div className="lg:col-span-2 space-y-10">
           <EditProfileForm profile={profile} />
           <InterestTagsEditor initialTags={profile?.interest_tags || []} />
+          <NotificationSettingsForm profile={profile} />
         </div>
 
         {/* Right Column: Account Status */}
