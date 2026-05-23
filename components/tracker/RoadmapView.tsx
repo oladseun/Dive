@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { TaskDetailPanel } from './TaskDetailPanel'
 
 type RoadmapTask = {
@@ -21,9 +21,14 @@ const formatDate = (dateStr: string) => {
 
 export function RoadmapView({ tasks }: { tasks: RoadmapTask[] }) {
   const [selectedTask, setSelectedTask] = useState<RoadmapTask | null>(null)
+  const [localTasks, setLocalTasks] = useState<RoadmapTask[]>(tasks)
+
+  useEffect(() => {
+    setLocalTasks(tasks)
+  }, [tasks])
 
   // Sort tasks by day_number, then due_date
-  const sortedTasks = [...tasks].sort((a, b) => {
+  const sortedTasks = [...localTasks].sort((a, b) => {
     if (a.day_number !== null && b.day_number !== null) {
       return a.day_number - b.day_number
     }
@@ -107,6 +112,9 @@ export function RoadmapView({ tasks }: { tasks: RoadmapTask[] }) {
         <TaskDetailPanel 
           task={selectedTask} 
           onClose={() => setSelectedTask(null)} 
+          onSave={(updatedTask) => {
+            setLocalTasks(prev => prev.map(t => t.id === updatedTask.id ? { ...t, ...updatedTask } : t))
+          }}
         />
       )}
     </>

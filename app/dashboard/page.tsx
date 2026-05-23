@@ -13,6 +13,7 @@ export default function DashboardPage() {
   const [matchCount, setMatchCount] = useState(0);
   const [readinessPercent, setReadinessPercent] = useState(0);
   const [coreDocs, setCoreDocs] = useState<any[]>([]);
+  const [allTasks, setAllTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const supabase = createClient();
@@ -63,6 +64,12 @@ export default function DashboardPage() {
       setCoreDocs(docsList);
       setReadinessPercent(Math.round((docsList.filter(d => d.ready).length / docsList.length) * 100));
       
+      const { data: tasksData } = await supabase
+        .from("tasks")
+        .select("opportunity_id, is_complete")
+        .eq("user_id", user.id);
+      setAllTasks(tasksData || []);
+
       setLoading(false);
     }
 
@@ -110,9 +117,9 @@ export default function DashboardPage() {
       )
     },
     { 
-      name: "Missing", 
+      name: "Missing Core Docs", 
       value: coreDocs.filter(d => !d.ready).length, 
-      label: "Actions",
+      label: "Action Required",
       icon: (
         <svg className="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -167,7 +174,7 @@ export default function DashboardPage() {
         {/* Active Applications */}
         <div className="lg:col-span-2 space-y-8">
           <motion.div variants={itemVariants} className="flex items-center justify-between border-b border-slate-100 pb-5">
-            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Active Roadmaps</h3>
+            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Applications</h3>
             <Link href="/dashboard/roadmaps" className="text-[11px] font-bold uppercase tracking-widest text-primary hover:text-blue-700 transition-colors">
               View All
             </Link>
@@ -178,7 +185,10 @@ export default function DashboardPage() {
               savedOpps.map((saved: any) => {
                 const opp = saved.opportunities;
                 if (!opp) return null;
-                const progress = 35; 
+                const oppTasks = allTasks.filter((t: any) => t.opportunity_id === opp.id);
+                const progress = oppTasks.length > 0 
+                  ? Math.round((oppTasks.filter((t: any) => t.is_complete).length / oppTasks.length) * 100) 
+                  : 0; 
                 const deadline = opp.deadline ? new Date(opp.deadline) : null;
                 
                 return (
@@ -262,7 +272,7 @@ export default function DashboardPage() {
             <div className="flex justify-between items-end border-b border-slate-50 pb-4">
               <div className="space-y-1">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Documentation</p>
-                <p className="text-sm font-bold text-slate-900 tracking-tight">Core Asset Readiness</p>
+                <p className="text-sm font-bold text-slate-900 tracking-tight">Missing Core Assets</p>
               </div>
               <span className="text-3xl font-bold text-primary tracking-tight">{readinessPercent}%</span>
             </div>

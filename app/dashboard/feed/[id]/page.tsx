@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Badge, Button } from "@/components/ui";
 import { saveOpportunity } from "../actions";
 import { Database } from "@/types/database";
+import { generateGoogleCalendarUrl } from "@/lib/calendar";
 
 type Opportunity = Database["public"]["Tables"]["opportunities"]["Row"];
 
@@ -78,9 +79,25 @@ export default async function OpportunityDetailsPage({
           <div className="grid md:grid-cols-3 gap-8 py-8 border-y border-slate-50">
             <div className="space-y-1">
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 font-mono">Deadline</p>
-              <p className="text-lg font-bold text-slate-900">
-                {opportunity.deadline ? new Date(opportunity.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Rolling Basis'}
-              </p>
+              <div className="space-y-2">
+                <p className="text-lg font-bold text-slate-900">
+                  {opportunity.deadline ? new Date(opportunity.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Rolling Basis'}
+                </p>
+                {opportunity.deadline && !isNaN(new Date(opportunity.deadline).getTime()) && (
+                  <a
+                    href={generateGoogleCalendarUrl({
+                      title: `Deadline: ${opportunity.title}`,
+                      description: `Application deadline for ${opportunity.title}.`,
+                      date: new Date(opportunity.deadline)
+                    })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block text-[9px] font-bold uppercase tracking-widest bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-800 px-2 py-1 rounded transition-colors"
+                  >
+                    + Google Cal
+                  </a>
+                )}
+              </div>
             </div>
             <div className="space-y-1">
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 font-mono">Eligibility</p>

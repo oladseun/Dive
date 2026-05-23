@@ -21,9 +21,10 @@ interface Props {
   opportunity?: any
   profile?: any
   onClose: () => void
+  onSave?: (task: Task) => void
 }
 
-export function TaskDetailPanel({ task, opportunity, profile, onClose }: Props) {
+export function TaskDetailPanel({ task, opportunity, profile, onClose, onSave }: Props) {
   const router = useRouter()
   const [status, setStatus] = useState(task.status || (task.is_complete ? 'completed' : 'todo'))
   const [notes, setNotes] = useState(task.notes || '')
@@ -37,6 +38,9 @@ export function TaskDetailPanel({ task, opportunity, profile, onClose }: Props) 
     try {
       await updateTaskDetails(task.id, { status, notes })
       toast.success('Task updated')
+      if (onSave) {
+        onSave({ ...task, status, notes, is_complete: status === 'completed' })
+      }
       router.refresh()
       onClose()
     } catch (e) {
