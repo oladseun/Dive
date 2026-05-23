@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import TaskList from './task-list'
+import { generateGoogleCalendarUrl } from '@/lib/calendar'
 
 export default async function RoadmapDetailPage({
   params,
@@ -104,8 +105,10 @@ export default async function RoadmapDetailPage({
     <div className="max-w-6xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <div className="flex items-center justify-between">
         <Link href="/dashboard/roadmaps" className="group flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-all">
-          <span className="text-lg group-hover:-translate-x-1 transition-transform">←</span>
-          <span>Return to Flight Ops</span>
+          <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          <span className="pt-[2px]">Return to Flight Ops</span>
         </Link>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -213,6 +216,39 @@ export default async function RoadmapDetailPage({
               )}
             </div>
           </div>
+
+          {/* Calendar Sync */}
+          {opportunity.deadline && (
+            <div className="relative group">
+              <div className="absolute inset-0 bg-blue-500/5 blur-2xl group-hover:bg-blue-500/10 transition-colors rounded-3xl" />
+              <div className="relative bg-white border border-blue-500/10 rounded-3xl p-8 space-y-4">
+                <div className="flex items-center gap-3 text-blue-500">
+                  <span className="text-xl">📅</span>
+                  <h4 className="font-black text-[10px] uppercase tracking-widest">Calendar Sync</h4>
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Never miss the launch window. Add the final deadline to your calendar now.
+                </p>
+                <div className="pt-2">
+                  <a 
+                    href={generateGoogleCalendarUrl({
+                      title: `Deadline: ${opportunity.title}`,
+                      description: `Opportunity Deadline: ${opportunity.title}\n\nReview Requirements: https://dive-seven.vercel.app/dashboard/roadmaps/${id}`,
+                      date: new Date(opportunity.deadline)
+                    })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all"
+                  >
+                    <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Add to Calendar
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Intelligence Brief */}
           <div className="relative group">
