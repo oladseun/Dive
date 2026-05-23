@@ -20,12 +20,16 @@ export default function TaskList({
   tasks: initialTasks, 
   opportunityId, 
   userId,
-  userTier = 'free'
+  userTier = 'free',
+  opportunity,
+  profile
 }: { 
   tasks: Task[], 
   opportunityId: string, 
   userId: string,
-  userTier?: string
+  userTier?: string,
+  opportunity?: any,
+  profile?: any
 }) {
   const [tasks, setTasks] = useState(initialTasks)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
@@ -103,9 +107,11 @@ export default function TaskList({
         ))}
       </div>
 
-      {selectedTask && userTier === 'pro' && (
+      {selectedTask && (
         <TaskDetailPanel 
           task={selectedTask} 
+          opportunity={opportunity}
+          profile={profile}
           onClose={() => setSelectedTask(null)} 
         />
       )}

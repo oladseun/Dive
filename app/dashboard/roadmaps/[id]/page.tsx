@@ -184,7 +184,7 @@ export default async function RoadmapDetailPage({
           </div>
           
           <div className="bg-white border border-border/50 rounded-[2rem] p-4 shadow-sm">
-            <TaskList tasks={tasks || []} opportunityId={id} userId={user.id} userTier={profile?.tier || 'free'} />
+            <TaskList tasks={tasks || []} opportunityId={id} userId={user.id} userTier={profile?.tier || 'free'} opportunity={opportunity} profile={profile} />
           </div>
         </div>
 
