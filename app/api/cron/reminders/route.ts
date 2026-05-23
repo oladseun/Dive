@@ -39,7 +39,7 @@ export async function GET(request: Request) {
       // 2. Fetch user notification preferences
       const { data: user } = await supabase
         .from('users')
-        .select('email, name, notification_pref, whatsapp_number')
+        .select('email, name, notification_pref, whatsapp_number, tier')
         .eq('id', task.user_id)
         .single();
 
@@ -75,7 +75,7 @@ export async function GET(request: Request) {
       }
 
       // 4. Send WhatsApp if preference allows (Mocked for MVP)
-      if (pref === 'whatsapp' || pref === 'both') {
+      if (user.tier === 'pro' && (pref === 'whatsapp' || pref === 'both')) {
         if (user.whatsapp_number) {
           console.log(`[WHATSAPP MOCK] Sending WhatsApp to ${user.whatsapp_number}: "Task ${task.title} due in ${daysUntilDue} days!"`);
           sentReminders.push({ type: 'whatsapp', userId: user.whatsapp_number, task: task.title });

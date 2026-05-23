@@ -19,7 +19,7 @@ export async function toggleTaskStatus(taskId: string, isComplete: boolean) {
     throw new Error('Failed to update task')
   }
 
-  revalidatePath('/dashboard/tracker/[id]', 'page')
+  revalidatePath('/dashboard', 'layout')
 }
 
 export async function updateTaskDetails(
@@ -51,5 +51,5 @@ export async function updateTaskDetails(
     throw new Error('Failed to update task details')
   }
 
-  revalidatePath('/dashboard/tracker/[id]', 'page')
+  revalidatePath('/dashboard', 'layout')
 }

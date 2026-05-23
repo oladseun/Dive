@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { Badge, Button } from "@/components/ui"
+import { generateGoogleCalendarUrl, downloadIcsFile } from '@/lib/calendar'
 
 export default async function SavedOpportunitiesPage() {
   const supabase = createClient()
@@ -86,13 +87,13 @@ export default async function SavedOpportunitiesPage() {
                 </div>
                 
                 <div className="space-y-4 mb-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-primary group-hover:bg-primary/5 transition-all">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-primary group-hover:bg-primary/5 transition-all shrink-0">
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 font-mono">Deadline</p>
                       <p className="text-xs font-bold text-slate-700">
                         {(() => {
@@ -101,6 +102,24 @@ export default async function SavedOpportunitiesPage() {
                           return isNaN(date.getTime()) ? 'Rolling Basis' : date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
                         })()}
                       </p>
+                      
+                      {/* Calendar Sync Dropdown/Buttons */}
+                      {opp.deadline && !isNaN(new Date(opp.deadline).getTime()) && (
+                        <div className="flex gap-2 mt-2">
+                          <a
+                            href={generateGoogleCalendarUrl({
+                              title: `Deadline: ${opp.title}`,
+                              description: `Application deadline for ${opp.title} on Dive.`,
+                              date: new Date(opp.deadline)
+                            })}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[9px] font-bold uppercase tracking-widest bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-800 px-2 py-1 rounded transition-colors"
+                          >
+                            + Google Cal
+                          </a>
+                        </div>
+                      )}
                     </div>
                   </div>
                   

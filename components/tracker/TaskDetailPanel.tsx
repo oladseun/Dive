@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui'
 import { updateTaskDetails } from '@/app/dashboard/tracker/actions'
 import { toast } from 'sonner'
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export function TaskDetailPanel({ task, opportunity, profile, onClose }: Props) {
+  const router = useRouter()
   const [status, setStatus] = useState(task.status || (task.is_complete ? 'completed' : 'todo'))
   const [notes, setNotes] = useState(task.notes || '')
   const [isSaving, setIsSaving] = useState(false)
@@ -35,6 +37,7 @@ export function TaskDetailPanel({ task, opportunity, profile, onClose }: Props) 
     try {
       await updateTaskDetails(task.id, { status, notes })
       toast.success('Task updated')
+      router.refresh()
       onClose()
     } catch (e) {
       toast.error('Failed to update task')

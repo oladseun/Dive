@@ -64,7 +64,7 @@ export default async function ReadinessSuite() {
         <div className="bg-slate-900 text-white p-6 rounded-2xl flex items-center gap-8 shadow-2xl shadow-slate-900/20">
           <div className="flex flex-col">
             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Overall Status</span>
-            <span className="text-3xl font-bold text-primary tracking-tight">{progressPercent}%</span>
+            <span className="text-3xl font-bold text-blue-400 tracking-tight">{progressPercent}%</span>
           </div>
           <div className="w-px h-10 bg-slate-800" />
           <div className="flex flex-col">

@@ -69,7 +69,7 @@ export default async function ProfilePage() {
         <div className="space-y-8">
           <section className="bg-slate-900 text-white p-8 rounded-3xl relative overflow-hidden shadow-2xl shadow-slate-900/20">
             <div className="relative z-10 space-y-8">
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Membership Tier</h3>
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-400">Membership Tier</h3>
               
               <div className="space-y-6">
                 <div>
