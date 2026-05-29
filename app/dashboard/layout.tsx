@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -82,6 +83,15 @@ export default function DashboardLayout({
         </svg>
       )
     },
+    { 
+      name: "Upgrade to Pro ✨", 
+      href: "/dashboard/upgrade", 
+      icon: (
+        <svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+        </svg>
+      )
+    },
   ];
 
   const initials = profile?.name 
@@ -99,10 +109,14 @@ export default function DashboardLayout({
         {/* Branding */}
         <div className="p-8 pb-12 relative z-10">
           <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden mix-blend-multiply bg-white">
+              <Image 
+                src="/logo.png" 
+                alt="Dive Logo" 
+                width={48} 
+                height={48} 
+                className="w-full h-full object-cover scale-[1.3]"
+              />
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-display font-bold tracking-tight text-slate-900 leading-none">DIVE<span className="text-primary italic">.</span></span>

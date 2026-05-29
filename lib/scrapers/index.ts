@@ -43,6 +43,11 @@ export async function runAllScrapers() {
       try {
         const enriched = await enrichOpportunity(raw.title, raw.description || '')
 
+        if (enriched.scamScore !== undefined && enriched.scamScore >= 7) {
+          console.log(`Skipping likely scam (Score ${enriched.scamScore}): ${raw.title}`)
+          continue
+        }
+
         const normalized = normalizeOpportunity({
           ...raw,
           tags: [...(raw.tags || []), ...enriched.tags],

@@ -5,6 +5,7 @@ export interface EnrichedData {
   requirements: string[]
   deadline: string | null
   region: string
+  scamScore?: number
 }
 
 export async function enrichOpportunity(title: string, description: string): Promise<EnrichedData> {
@@ -24,6 +25,7 @@ export async function enrichOpportunity(title: string, description: string): Pro
     - requirements: string[] (Max 5 most critical eligibility requirements as short clear sentences)
     - deadline: string | null (ISO 8601 format if found, otherwise null)
     - region: string (The specific primary region, e.g., "Nigeria", "USA", "Global")
+    - scamScore: number (Score 0-10 on how likely it is to be a scam. 10 = definitely a scam. Look out for upfront application fees, generic @gmail.com emails, or unrealistic promises)
     
     Format the response as pure JSON.
   `
@@ -68,5 +70,6 @@ function fallbackEnrichment(title: string, description: string): EnrichedData {
     requirements: ['Refer to source for full requirements.'],
     deadline: null,
     region: text.includes('nigeria') ? 'Nigeria' : 'Global',
+    scamScore: 0,
   }
 }
