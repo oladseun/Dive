@@ -34,7 +34,7 @@ export default function SignupPage({
     >
       <motion.div variants={itemVariants} className="space-y-3">
         <h1 className="text-4xl font-display font-black tracking-tightest text-slate-900 leading-tight">
-          Get <span className="text-blue-600">Started.</span>
+          Dive <span className="text-blue-600">in.</span>
         </h1>
         <p className="text-slate-500 text-sm font-medium leading-relaxed">
           Create your account and start managing your opportunities.

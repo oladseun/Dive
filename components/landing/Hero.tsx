@@ -72,16 +72,15 @@ export default function Hero() {
             variants={itemVariants} 
             className="text-6xl md:text-[110px] font-display font-medium leading-[0.9] tracking-tighter mb-10 text-slate-900"
           >
-            Launch Your <br />
-            <span className="text-primary italic">Global Career.</span>
+            Find Global Opportunities. <br />
+            <span className="text-primary italic">Apply Faster.</span>
           </motion.h1>
           
           <motion.p 
             variants={itemVariants} 
             className="text-xl md:text-2xl text-slate-500 leading-relaxed mb-16 max-w-3xl mx-auto font-medium"
           >
-            Stop searching fragmented blogs. Dive gives you the curated feed 
-            and the step-by-step roadmap to win your next global opportunity.
+            Find opportunities faster and apply before you miss out. Discover scholarships, grants, fellowships, and more; manage and track your applications, and stay on top of every deadline.
           </motion.p>
           
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-6">
@@ -89,13 +88,13 @@ export default function Hero() {
               href="/signup" 
               className="group relative w-full sm:w-auto px-12 py-6 bg-primary text-white font-bold text-sm uppercase tracking-widest transition-all hover:bg-blue-700 hover:-translate-y-1 shadow-xl shadow-primary/20"
             >
-              Start Your Roadmap
+              Dive into opportunities
             </Link>
             <Link 
               href="#problem" 
               className="w-full sm:w-auto px-12 py-6 border border-slate-200 bg-white text-slate-900 font-bold text-sm uppercase tracking-widest hover:bg-slate-50 transition-all hover:-translate-y-1 shadow-sm"
             >
-              How it works
+              See how it works
             </Link>
           </motion.div>
         </div>

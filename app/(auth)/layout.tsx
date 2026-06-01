@@ -100,8 +100,8 @@ export default function AuthLayout({
             </div>
             
             <h2 className="text-6xl lg:text-7xl font-display font-black text-slate-900 leading-[1.05] tracking-tightest mb-8">
-              Empower<br />Your<br />
-              <span className="text-blue-600">Future.</span>
+              Never miss out on<br />
+              <span className="text-blue-600">opportunities.</span>
             </h2>
             
             <p className="text-xl text-slate-500 leading-relaxed mb-12 font-medium max-w-sm">
