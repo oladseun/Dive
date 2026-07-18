@@ -22,7 +22,7 @@ export default function Story() {
               <span className="text-primary italic">is where dreams stall.</span>
             </h2>
             <p className="text-xl text-slate-500 leading-relaxed mb-12 font-medium">
-              Every year, over 50,000 Nigerian graduates search for global scholarships. 
+              Every year, over 50,000 Nigerian graduates search for global scholarships, grants, fellowships, and competitions.
               They find the links. They bookmark the pages. But most never finish the application.
             </p>
             
@@ -32,8 +32,8 @@ export default function Story() {
                 <div>
                   <h4 className="text-lg font-bold mb-2 uppercase tracking-tight text-slate-900">The Discovery Phase</h4>
                   <p className="text-slate-500 leading-relaxed">
-                    Finding links is easy. This creates a false sense of progress. 
-                    Most students stop here, thinking the journey is halfway done.
+                    Finding links is easy. This creates a false sense of progress.
+                    Most applicants stop here, thinking the journey is halfway done.
                   </p>
                 </div>
               </div>
@@ -42,8 +42,8 @@ export default function Story() {
                 <div>
                   <h4 className="text-lg font-bold mb-2 uppercase tracking-tight text-slate-900">The Documentation Wall</h4>
                   <p className="text-slate-500 leading-relaxed">
-                    The real work involves 4-part essays, institutional validations, 
-                    and complex criteria that require precise strategy and timing.
+                    The real work involves 4-part essays, recommendation letters,
+                    and complex funding criteria that require precise strategy and timing.
                   </p>
                 </div>
               </div>

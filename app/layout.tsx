@@ -18,8 +18,8 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dive | Scholarship Discovery & Application Readiness",
-  description: "The premium roadmap for Nigerian students and creatives to secure global funding. Discover opportunities and prepare your documents with ease.",
+  title: "Dive | Opportunity Discovery & Application Readiness",
+  description: "The premium roadmap for Nigerian students and creatives to secure global funding. Discover scholarships, grants, and fellowships, and prepare your documents with ease.",
 };
 
 import { Toaster } from 'sonner';

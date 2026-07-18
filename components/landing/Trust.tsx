@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 
 export default function Trust() {
   const partners = [
-    { 
-      name: "Chevening", 
+    {
+      name: "MacArthur Foundation",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path d="M12 2L2 7l10 5 10-5-10-5z" />
@@ -16,8 +16,8 @@ export default function Trust() {
         </svg>
       )
     },
-    { 
-      name: "MasterCard", 
+    {
+      name: "Mandela Washington Fellowship",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <circle cx="9" cy="12" r="6" />
@@ -26,8 +26,8 @@ export default function Trust() {
         </svg>
       )
     },
-    { 
-      name: "DAAD", 
+    {
+      name: "Hult Prize",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <rect x="4" y="4" width="16" height="16" rx="1" />
@@ -36,8 +36,8 @@ export default function Trust() {
         </svg>
       )
     },
-    { 
-      name: "Fulbright", 
+    {
+      name: "Ford Foundation",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path d="M12 2l2.4 7.2h7.6l-6.2 4.5 2.4 7.3-6.2-4.5-6.2 4.5 2.4-7.3-6.2-4.5h7.6z" />
@@ -45,8 +45,8 @@ export default function Trust() {
         </svg>
       )
     },
-    { 
-      name: "Erasmus+", 
+    {
+      name: "TED Fellows",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
@@ -91,7 +91,7 @@ export default function Trust() {
         <div className="flex flex-col items-center gap-16">
           <div className="flex flex-col items-center gap-4">
             <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-400">
-              OPTIMIZED FOR THE WORLD'S ELITE SCHOLARSHIPS
+              OPTIMIZED FOR THE WORLD'S ELITE OPPORTUNITIES
             </span>
             <div className="h-px w-12 bg-primary/20" />
           </div>

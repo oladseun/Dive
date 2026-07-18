@@ -7,7 +7,7 @@ export default function Solution() {
   const features = [
     {
       title: "Opportunity Curation",
-      description: "A high-fidelity feed of global scholarships, grants, and fellowships. Filtered by your unique profile.",
+      description: "A high-fidelity feed of global scholarships, grants, fellowships, and competitions. Filtered by your unique profile.",
       code: "FEED",
       icon: (
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -27,7 +27,7 @@ export default function Solution() {
     },
     {
       title: "The Readiness Vault",
-      description: "Professional templates, CV frameworks, and AI-assisted drafting to get you submission-ready.",
+      description: "Professional templates, CV frameworks, proposal formats, and AI-assisted drafting to get you submission-ready.",
       code: "VAULT",
       icon: (
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

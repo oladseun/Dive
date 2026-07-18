@@ -20,7 +20,7 @@ export default function Impact() {
     {
       label: "Global Reach",
       value: "40+",
-      subtext: "Host Institutions",
+      subtext: "Institutions & Funders",
       color: "slate"
     }
   ];
@@ -91,19 +91,19 @@ export default function Impact() {
                 </div>
 
                 <blockquote className="text-2xl md:text-3xl font-medium text-slate-800 leading-tight mb-12 tracking-tight">
-                  "The bridge between my potential and the institution was the documentation. 
-                  Dive didn't just tell me what to do—they built the application for me."
+                  "The bridge between my potential and the funding was the documentation.
+                  Dive didn't just tell me what to do—they built the proposal for me."
                 </blockquote>
 
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 rounded-2xl bg-slate-200 border border-slate-300 flex items-center justify-center overflow-hidden">
                     <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">
-                      JD
+                      AB
                     </div>
                   </div>
                   <div>
-                    <div className="text-lg font-bold text-slate-900 tracking-tight">Jared Dawson</div>
-                    <div className="text-sm font-medium text-slate-500 italic">Commonwealth Scholar, 2024</div>
+                    <div className="text-lg font-bold text-slate-900 tracking-tight">Amara Bello</div>
+                    <div className="text-sm font-medium text-slate-500 italic">MacArthur Foundation Grantee, 2024</div>
                   </div>
                 </div>
               </div>
@@ -118,7 +118,7 @@ export default function Impact() {
                   ))}
                 </div>
                 <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                  +1.2k Students Enrolled
+                  +1.2k Applicants Enrolled
                 </div>
               </div>
             </div>

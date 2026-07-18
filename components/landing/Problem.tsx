@@ -7,7 +7,7 @@ export default function Problem() {
   const points = [
     {
       title: "The Information Trap",
-      description: "Finding a scholarship link is only 10% of the journey. Most students stall when the complex documentation phase begins.",
+      description: "Finding an opportunity link is only 10% of the journey. Most applicants stall when the complex documentation phase begins.",
       tag: "Incomplete",
       status: "STALLED",
       icon: (
@@ -18,7 +18,7 @@ export default function Problem() {
     },
     {
       title: "The Execution Gap",
-      description: "Drafting a global-standard Statement of Purpose or formatting a research CV requires strategic insight most students lack.",
+      description: "Drafting a global-standard essay, grant proposal, or competition portfolio requires strategic insight most applicants lack.",
       tag: "Knowledge Gap",
       status: "CRITICAL",
       icon: (
@@ -29,7 +29,7 @@ export default function Problem() {
     },
     {
       title: "The Documentation Wall",
-      description: "Securing Medium of Instruction letters or tracking institutional validations often leads to missed windows and deadlines.",
+      description: "Securing recommendation letters, budget justifications, or verifying eligibility often leads to missed windows and deadlines.",
       tag: "Operational Fail",
       status: "ABORTED",
       icon: (
