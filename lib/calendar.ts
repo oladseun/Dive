@@ -22,7 +22,7 @@ export function generateGoogleCalendarUrl({
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
-export function downloadIcsFile({
+export function generateIcsString({
   title,
   description,
   date,
@@ -35,7 +35,7 @@ export function downloadIcsFile({
   const endDateObj = new Date(date.getTime() + 60 * 60 * 1000);
   const endDate = endDateObj.toISOString().replace(/-|:|\.\d+/g, "");
 
-  const icsContent = [
+  return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//Dive Workspace//EN",
@@ -49,6 +49,18 @@ export function downloadIcsFile({
     "END:VEVENT",
     "END:VCALENDAR",
   ].join("\r\n");
+}
+
+export function downloadIcsFile({
+  title,
+  description,
+  date,
+}: {
+  title: string;
+  description?: string;
+  date: Date;
+}) {
+  const icsContent = generateIcsString({ title, description, date });
 
   const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
   const link = document.createElement("a");

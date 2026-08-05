@@ -16,16 +16,16 @@ interface Task {
   day_number: number
 }
 
-export default function TaskList({ 
-  tasks: initialTasks, 
-  opportunityId, 
+export default function TaskList({
+  tasks: initialTasks,
+  opportunityId,
   userId,
   userTier = 'free',
   opportunity,
   profile
-}: { 
-  tasks: Task[], 
-  opportunityId: string, 
+}: {
+  tasks: Task[],
+  opportunityId: string,
   userId: string,
   userTier?: string,
   opportunity?: any,
@@ -37,7 +37,7 @@ export default function TaskList({
   const handleToggle = async (e: React.MouseEvent, taskId: string, currentStatus: boolean) => {
     e.stopPropagation()
     // Optimistic UI
-    setTasks(prev => prev.map(t => 
+    setTasks(prev => prev.map(t =>
       t.id === taskId ? { ...t, is_complete: !currentStatus, status: !currentStatus ? 'completed' : 'todo' } : t
     ))
 
@@ -56,30 +56,27 @@ export default function TaskList({
     <>
       <div className="space-y-4">
         {tasks.map((task, i) => (
-          <motion.div 
+          <motion.div
             key={task.id}
             onClick={() => handleTaskClick(task)}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className={`flex items-center gap-6 p-4 rounded-xl border transition-all ${userTier === 'pro' ? 'cursor-pointer' : 'cursor-default'} ${
-              task.is_complete 
-                ? 'bg-surface border-border opacity-70' 
+            className={`flex items-center gap-6 p-4 rounded-xl border transition-all ${userTier === 'pro' ? 'cursor-pointer' : 'cursor-default'} ${task.is_complete
+                ? 'bg-surface border-border opacity-70'
                 : task.status === 'in_progress'
                   ? 'bg-orange-50/50 border-orange-200'
                   : 'bg-white border-border hover:border-primary/30'
-            }`}
+              }`}
           >
-            <div className="flex flex-col items-center gap-1 min-w-[40px]">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase">Day</span>
-              <span className="text-sm font-bold">{task.day_number}</span>
+            <div className="flex justify-center min-w-[40px]">
+              <span className="text-sm font-bold text-muted-foreground">{i + 1}</span>
             </div>
 
-            <button 
+            <button
               onClick={(e) => handleToggle(e, task.id, task.is_complete)}
-              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                task.is_complete ? 'bg-primary border-primary text-white' : 'border-border hover:border-primary'
-              }`}
+              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${task.is_complete ? 'bg-primary border-primary text-white' : 'border-border hover:border-primary'
+                }`}
             >
               {task.is_complete && <span className="text-xs">✓</span>}
             </button>
@@ -108,11 +105,11 @@ export default function TaskList({
       </div>
 
       {selectedTask && (
-        <TaskDetailPanel 
-          task={selectedTask} 
+        <TaskDetailPanel
+          task={selectedTask}
           opportunity={opportunity}
           profile={profile}
-          onClose={() => setSelectedTask(null)} 
+          onClose={() => setSelectedTask(null)}
         />
       )}
     </>

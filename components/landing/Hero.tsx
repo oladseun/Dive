@@ -80,7 +80,7 @@ export default function Hero() {
             variants={itemVariants} 
             className="text-xl md:text-2xl text-slate-500 leading-relaxed mb-16 max-w-3xl mx-auto font-medium"
           >
-            Find opportunities faster and apply before you miss out. Discover scholarships, grants, fellowships, and more; manage and track your applications, and stay on top of every deadline.
+            Find opportunities faster and apply before you miss out. Discover scholarships, grants, professional and academic fellowships, and educational competitions; manage and track your applications, and stay on top of every deadline.
           </motion.p>
           
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-6">
@@ -110,17 +110,17 @@ export default function Hero() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 border-b border-slate-100 pb-12">
               <div className="flex items-center gap-6">
                 <div className="w-24 h-24 rounded-2xl bg-slate-50 flex items-center justify-center border border-slate-100 relative overflow-hidden group">
-                  <img src="https://placehold.co/64x64/002999/white?text=C" alt="Chevening" className="w-16 h-16 relative z-10" />
+                  <img src="https://placehold.co/64x64/002999/white?text=G" alt="Global Innovation Fund" className="w-16 h-16 relative z-10" />
                 </div>
                 <div>
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-bold text-4xl tracking-tight text-slate-900">Chevening Scholarship</h3>
+                    <h3 className="font-bold text-4xl tracking-tight text-slate-900">Global Innovation Fund</h3>
                     <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider border border-primary/20">
                       Optimal Match
                     </span>
                   </div>
                   <p className="text-slate-400 font-medium flex items-center gap-2">
-                    UK Government Fellowship • Cycle 2025/2026 • 12 Weeks Remaining
+                    International Funding Program • Cycle 2025/2026 • 12 Weeks Remaining
                   </p>
                 </div>
               </div>
@@ -145,7 +145,7 @@ export default function Hero() {
                   </div>
                   <div className="space-y-4">
                     {[
-                      { title: "Institutional Profile Optimization", status: "complete" },
+                      { title: "Applicant Profile Optimization", status: "complete" },
                       { title: "Leadership Narrative Synthesis", status: "in-progress" },
                       { title: "Referee Validation Request", status: "pending" },
                     ].map((item, i) => (
@@ -202,7 +202,7 @@ export default function Hero() {
                   
                   <div className="p-6 bg-white border border-slate-100 rounded-xl shadow-sm">
                     <p className="text-xs font-medium italic text-slate-500 leading-relaxed">
-                      "System Alert: Your 'Networking' essay for Chevening lacks institutional-grade evidence. 
+                      "System Alert: Your 'Networking' essay lacks strong supporting evidence.
                       Integrate your current internship at Flutterwave to increase alignment score."
                     </p>
                   </div>
