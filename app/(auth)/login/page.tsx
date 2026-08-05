@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { login } from "../actions";
 import { Button } from "@/components/ui";
+import { toast } from "sonner";
 
 export default function LoginPage({
   searchParams,
@@ -25,8 +27,18 @@ export default function LoginPage({
     visible: { opacity: 1, y: 0 },
   };
 
+  useEffect(() => {
+    if (searchParams?.message?.includes("Successfully signed up")) {
+      toast.success("Successfully signed up!", {
+        description: "Please check your email to confirm your account.",
+      });
+    }
+  }, [searchParams?.message]);
+
+  const isSuccessMessage = searchParams?.message?.includes("Successfully signed up");
+
   return (
-    <motion.div 
+    <motion.div
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -40,9 +52,9 @@ export default function LoginPage({
           Sign in to your account to continue your journey.
         </p>
       </motion.div>
-      
-      {searchParams?.message && (
-        <motion.div 
+
+      {searchParams?.message && !isSuccessMessage && (
+        <motion.div
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           className="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl flex items-start gap-3"
@@ -73,7 +85,7 @@ export default function LoginPage({
               />
             </div>
           </motion.div>
-          
+
           <motion.div variants={itemVariants} className="space-y-1.5">
             <div className="flex justify-between items-center px-1">
               <label htmlFor="password" className="text-xs font-semibold text-slate-700">
@@ -95,7 +107,7 @@ export default function LoginPage({
             </div>
           </motion.div>
         </div>
-        
+
         <Button
           type="submit"
           size="lg"
@@ -107,7 +119,7 @@ export default function LoginPage({
           </svg>
         </Button>
       </form>
-      
+
       <motion.div variants={itemVariants} className="text-center pt-6 border-t border-slate-100">
         <p className="text-sm text-slate-500 font-medium">
           New to Dive?{" "}

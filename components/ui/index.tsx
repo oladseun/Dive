@@ -6,13 +6,15 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'success';
   size?: 'sm' | 'md' | 'lg';
   href?: string;
+  target?: string;
+  rel?: string;
   loading?: boolean;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'primary', size = 'md', href, loading, children, ...props }, ref) => {
+  ({ className, variant = 'primary', size = 'md', href, target, rel, loading, children, ...props }, ref) => {
     const baseStyles = "inline-flex items-center justify-center font-mono font-bold uppercase tracking-[0.15em] transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none rounded-xl";
-    
+
     const variants = {
       primary: "bg-slate-900 text-white hover:bg-primary shadow-lg shadow-slate-900/10",
       secondary: "bg-primary/10 text-primary hover:bg-primary/20",
@@ -41,9 +43,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     if (href) {
       return (
-        <Link 
-          href={href} 
+        <Link
+          href={href}
           className={cn(baseStyles, variants[variant], sizes[size], className)}
+          target={target}
+          rel={rel}
         >
           {content}
         </Link>

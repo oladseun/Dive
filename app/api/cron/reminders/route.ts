@@ -1,91 +1,133 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { Resend } from 'resend';
+import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import { Resend } from "resend";
+import { generateIcsString } from "@/lib/calendar";
 
-// Vercel cron configuration (e.g. daily at 8AM)
-// vercel.json: { "crons": [{ "path": "/api/cron/reminders", "schedule": "0 8 * * *" }] }
-
-const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy');
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  // Validate cron secret to prevent unauthorized access
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}` && process.env.NODE_ENV === 'production') {
-    return new Response('Unauthorized', { status: 401 });
-  }
-
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!; // Must use service role to bypass RLS
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
   try {
-    // 1. Fetch upcoming tasks (due in the next 7 days) that are NOT complete
+    // 1. Verify authorization (optional but recommended for cron jobs)
+    const authHeader = request.headers.get("authorization");
+    if (
+      process.env.CRON_SECRET &&
+      authHeader !== `Bearer ${process.env.CRON_SECRET}`
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+    // Use the service role key to intelligently query across users in backgrounds jobs
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    // 2. Find opportunities with deadlines exactly 3 days from now
     const today = new Date();
-    const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-    
-    const { data: tasks, error: tasksError } = await supabase
-      .from('tasks')
-      .select('id, title, due_date, opportunity_id, user_id')
-      .eq('is_complete', false)
-      .gte('due_date', today.toISOString())
-      .lte('due_date', nextWeek.toISOString());
+    const threeDaysFromNow = new Date();
+    threeDaysFromNow.setDate(today.getDate() + 3);
+    const threeDaysStr = threeDaysFromNow.toISOString().split("T")[0]; // YYYY-MM-DD
 
-    if (tasksError) throw tasksError;
+    const { data: opportunities, error: oppError } = await supabase
+      .from("opportunities")
+      .select("*")
+      .eq('is_active', true)
+      .not("deadline", "is", null);
 
-    const sentReminders = [];
+    if (oppError) throw oppError;
 
-    // Group tasks by user to minimize queries (simplified for MVP)
-    for (const task of tasks || []) {
-      // 2. Fetch user notification preferences
-      const { data: user } = await supabase
-        .from('users')
-        .select('email, name, notification_pref, whatsapp_number, tier')
-        .eq('id', task.user_id)
-        .single();
+    // Filter to those due roughly in 3 days
+    const upcomingOpps = opportunities.filter((opp: any) => {
+      const oppDate = new Date(opp.deadline).toISOString().split("T")[0];
+      return oppDate === threeDaysStr;
+    });
 
-      if (!user) continue;
+    if (upcomingOpps.length === 0) {
+      return NextResponse.json({ message: "No upcoming deadlines in 3 days." });
+    }
 
-      const pref = user.notification_pref;
-      if (pref === 'none') continue;
+    let emailsSent = 0;
 
-      const daysUntilDue = Math.ceil((new Date(task.due_date).getTime() - today.getTime()) / (1000 * 3600 * 24));
-      
-      // Only remind on specific days (7 days, 3 days, 1 day)
-      if (![7, 3, 1].includes(daysUntilDue)) continue;
+    // 3. For each upcoming opportunity, find users who saved it
+    for (const opp of upcomingOpps) {
+      const { data: savedOpps } = await supabase
+        .from("saved_opportunities")
+        .select("user_id")
+        .eq("opportunity_id", opp.id);
 
-      // 3. Send Email if preference allows
-      if (pref === 'email' || pref === 'both') {
-        if (process.env.RESEND_API_KEY) {
-          await resend.emails.send({
-            from: 'Dive Reminders <reminders@dive.so>',
-            to: user.email,
-            subject: `Action Required: "${task.title}" is due in ${daysUntilDue} days!`,
-            html: `
-              <h2>Hello ${user.name},</h2>
-              <p>This is a reminder that your task <strong>${task.title}</strong> is due on ${new Date(task.due_date).toLocaleDateString()}.</p>
-              <p>Log in to your Dive workspace to complete it.</p>
-              <br/>
-              <p>Happy Applying,<br/>The Dive Team</p>
-            `,
+      if (!savedOpps || savedOpps.length === 0) continue;
+
+      for (const saved of savedOpps) {
+        const userId = saved.user_id;
+
+        // 4. Check if they have completed all tasks for this opportunity
+        const { data: tasks } = await supabase
+          .from("tasks")
+          .select("*")
+          .eq("opportunity_id", opp.id)
+          .eq("user_id", userId);
+
+        if (!tasks || tasks.length === 0) continue;
+
+        const isFullyComplete = tasks.every((task: any) => task.is_complete);
+
+        if (!isFullyComplete) {
+          // 5. Retrieve user email
+          const { data: user } = await supabase
+            .from("users")
+            .select("email, name")
+            .eq("id", userId)
+            .single();
+
+          if (!user?.email) continue;
+
+          // 6. Generate ICS Attachment Content
+          const icsContent = generateIcsString({
+            title: `Deadline: ${opp.title}`,
+            description: `Don't forget to submit your application for ${opp.title} on Dive Workspace!`,
+            date: new Date(opp.deadline),
           });
-          sentReminders.push({ type: 'email', userId: user.email, task: task.title });
-        } else {
-          console.log(`[DRY RUN] Would send email to ${user.email} for task: ${task.title}`);
-        }
-      }
 
-      // 4. Send WhatsApp if preference allows (Mocked for MVP)
-      if (user.tier === 'pro' && (pref === 'whatsapp' || pref === 'both')) {
-        if (user.whatsapp_number) {
-          console.log(`[WHATSAPP MOCK] Sending WhatsApp to ${user.whatsapp_number}: "Task ${task.title} due in ${daysUntilDue} days!"`);
-          sentReminders.push({ type: 'whatsapp', userId: user.whatsapp_number, task: task.title });
+          // 7. Send Reminder Email
+          if (process.env.RESEND_API_KEY) {
+            await resend.emails.send({
+              from: "Dive Flight Ops <onboarding@resend.dev>", // Replace with verified domain in production
+              to: [user.email],
+              subject: `Action Required: 3 Days left for ${opp.title}`,
+              html: `
+                <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+                  <h2>Final Deadline Approaching! 🚀</h2>
+                  <p>Hi ${user.name || 'there'},</p>
+                  <p>The deadline for <strong>${opp.title}</strong> is exactly 3 days away!</p>
+                  <p>Our records show that you haven't ticked off all your application tasks yet. Now is the perfect time to finalize your documents, tie up any loose ends, and submit!</p>
+                  <p>I've attached a calendar invite to this email so you don't miss the launch window.</p>
+                  <br/>
+                  <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3002'}/dashboard/roadmaps/${opp.id}" 
+                     style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                    Review Your Roadmap
+                  </a>
+                  <br/><br/>
+                  <p style="font-size: 12px; color: #666;">- The Dive Platform Tracker</p>
+                </div>
+              `,
+              attachments: [
+                {
+                  filename: "deadline_reminder.ics",
+                  content: Buffer.from(icsContent) as any,
+                },
+              ],
+            });
+            emailsSent++;
+          }
         }
       }
     }
 
-    return NextResponse.json({ success: true, processed: tasks?.length || 0, sent: sentReminders.length, log: sentReminders });
+    return NextResponse.json({ message: "Cron executed successfully", emailsSent });
   } catch (error: any) {
-    console.error('Cron Error:', error);
+    console.error("Cron Reminder Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

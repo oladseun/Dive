@@ -62,7 +62,7 @@ export default async function DiscoveryFeed({
     .from('saved_opportunities') as any)
     .select('opportunity_id')
     .eq('user_id', user.id)
-  
+
   if (savedError) {
     console.warn('Saved opportunities fetch warning:', savedError.message)
   }
@@ -104,7 +104,7 @@ export default async function DiscoveryFeed({
       const eduLower = userEducation.toLowerCase();
       const titleLower = opp.title?.toLowerCase() || '';
       const reqsLower = Array.isArray(opp.requirements) ? opp.requirements.join(' ').toLowerCase() : '';
-      
+
       let eduKeyword = '';
       if (eduLower.includes('undergrad') || eduLower.includes('bachelor')) eduKeyword = 'undergrad';
       else if (eduLower.includes('postgrad') || eduLower.includes('master')) eduKeyword = 'postgrad';
@@ -141,7 +141,7 @@ export default async function DiscoveryFeed({
             Discover and track curated opportunities tailored to your professional profile and career goals.
           </p>
         </div>
-        
+
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
           <RefreshButton />
           <form className="relative min-w-[300px] group">
@@ -166,15 +166,14 @@ export default async function DiscoveryFeed({
           <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Filter by Category</h3>
           <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{matchedOpportunities?.length || 0} Results Found</span>
         </div>
-        
+
         <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
           <Link
             href="/dashboard/feed"
-            className={`px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all border ${
-              !searchParams.type 
-                ? 'bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-900/10' 
+            className={`px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all border ${!searchParams.type
+                ? 'bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-900/10'
                 : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:text-slate-900'
-            }`}
+              }`}
           >
             All Types
           </Link>
@@ -182,11 +181,10 @@ export default async function DiscoveryFeed({
             <Link
               key={type}
               href={`/dashboard/feed?type=${type}${searchParams.q ? `&q=${searchParams.q}` : ''}`}
-              className={`px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all border whitespace-nowrap font-mono ${
-                searchParams.type === type 
-                  ? 'bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-900/10' 
+              className={`px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all border whitespace-nowrap font-mono ${searchParams.type === type
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-900/10'
                   : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:text-slate-900'
-              }`}
+                }`}
             >
               {type}
             </Link>
@@ -228,7 +226,7 @@ export default async function DiscoveryFeed({
                   </div>
                 )}
               </div>
-              
+
               <div className="mb-6 flex-1">
                 <h3 className="text-xl font-bold text-slate-900 group-hover:text-primary transition-colors tracking-tight leading-snug mb-3">
                   {opp.title}
@@ -241,7 +239,7 @@ export default async function DiscoveryFeed({
                   </div>
                 )}
               </div>
-              
+
               <div className="space-y-4 mb-8">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-primary group-hover:bg-primary/5 transition-all">
@@ -260,7 +258,7 @@ export default async function DiscoveryFeed({
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-primary group-hover:bg-primary/5 transition-all">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -281,7 +279,7 @@ export default async function DiscoveryFeed({
                   </div>
                 )}
               </div>
-              
+
               <div className="flex flex-wrap gap-2 mb-10">
                 {opp.tags?.slice(0, 3).map((tag: string) => (
                   <Badge key={tag}>
@@ -289,34 +287,44 @@ export default async function DiscoveryFeed({
                   </Badge>
                 ))}
               </div>
-              
-                <div className="flex gap-3 pt-6 border-t border-slate-50 mt-auto">
-                  <Button 
-                    href={`/dashboard/feed/${opp.id}`}
-                    variant="secondary"
-                    className="flex-1"
+
+              <div className="flex gap-2 pt-6 border-t border-slate-50 mt-auto">
+                {opp.source_url && (
+                  <Button
+                    href={opp.source_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 shadow-blue-600/20 text-[10px] px-1"
                   >
-                    Details
+                    Apply
                   </Button>
-                  
-                  {!savedIds.includes(opp.id) ? (
-                    <form action={saveOpportunity.bind(null, opp.id)} className="flex-1">
-                      <Button 
-                        type="submit"
-                        className="w-full"
-                      >
-                        TRACK
-                      </Button>
-                    </form>
-                  ) : (
-                    <div className="flex-1 py-3 bg-emerald-50 text-emerald-600 text-center text-[11px] font-bold uppercase tracking-widest rounded-xl border border-emerald-100 flex items-center justify-center gap-2 font-mono">
-                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                      Saved
-                    </div>
-                  )}
-                </div>
+                )}
+                <Button
+                  href={`/dashboard/feed/${opp.id}`}
+                  variant="secondary"
+                  className="flex-1 text-[10px] px-1"
+                >
+                  Details
+                </Button>
+
+                {!savedIds.includes(opp.id) ? (
+                  <form action={saveOpportunity.bind(null, opp.id)} className="flex-1">
+                    <Button
+                      type="submit"
+                      className="w-full text-[10px] px-1"
+                    >
+                      TRACK
+                    </Button>
+                  </form>
+                ) : (
+                  <div className="flex-1 py-3 bg-emerald-50 text-emerald-600 text-center text-[10px] font-bold uppercase tracking-widest rounded-xl border border-emerald-100 flex items-center justify-center gap-1 font-mono">
+                    <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="hidden sm:inline">Saved</span>
+                  </div>
+                )}
+              </div>
             </div>
           ))
         ) : (
